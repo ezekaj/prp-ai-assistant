@@ -1,0 +1,13 @@
+{
+  "name": "PRP-Agentic-Engineering",
+  "description": "Product Requirement Prompt methodology for agentic engineering",
+  "version": "1.0.0",
+  "settings": {
+    "defaultModel": "claude-3-5-sonnet-20241022",
+    "maxTokens": 8192,
+    "temperature": 0.1
+  },
+  "tools": {
+    "enabled": ["TodoWrite", "Bash", "Read", "Write", "Edit", "MultiEdit", "Grep", "Glob", "LS", "Task"]
+  }
+}

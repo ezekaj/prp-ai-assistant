@@ -1,0 +1,11 @@
+# PRP System Dependencies
+pathlib2>=2.3.0
+matplotlib>=3.5.0
+seaborn>=0.11.0
+python-dotenv>=0.19.0
+redis>=4.0.0
+celery>=5.2.0
+gunicorn>=20.1.0
+psycopg2-binary>=2.9.0
+sqlalchemy>=1.4.0
+alembic>=1.7.0

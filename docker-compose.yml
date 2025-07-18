@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  prp-app:
+    build: .
+    ports:
+      - "${PORT:-8000}:8000"
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SECRET_KEY=${SECRET_KEY}
+      - PRP_ENV=${PRP_ENV:-development}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - prp_exports:/app/PRPs/exports
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB:-prp_system}
+      - POSTGRES_USER=${POSTGRES_USER:-prpuser}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:6-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  worker:
+    build: .
+    command: celery -A prp_tasks worker --loglevel=info
+    environment:
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
+      - SECRET_KEY=${SECRET_KEY}
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - prp_exports:/app/PRPs/exports
+
+volumes:
+  postgres_data:
+  redis_data:
+  prp_exports:

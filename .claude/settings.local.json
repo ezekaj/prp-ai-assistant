@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(find:*)",
+      "Bash(ls:*)",
+      "WebFetch(domain:12factor.net)",
+      "WebFetch(domain:cloud.google.com)",
+      "WebFetch(domain:12factor.net)",
+      "Bash(echo $HOME)",
+      "Bash(chmod:*)",
+      "Bash(echo $PATH)",
+      "Bash(mkdir:*)",
+      "Bash(cp:*)",
+      "Bash(prp version:*)",
+      "Bash(\"/c/Users/User/bin/prp.bat\" version)",
+      "Bash(bash \"C:\\Users\\User\\prp\" version)",
+      "Bash(bash \"C:\\Users\\User\\prp\" quick-check)",
+      "Bash(bash \"C:\\Users\\User\\prp\" analyze)",
+      "Bash(git init:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": []
+  }
+}
