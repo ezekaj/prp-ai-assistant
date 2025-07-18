@@ -50,7 +50,7 @@ The PRP AI Assistant is an advanced system that combines the proven 12-Factor me
 ### Quick Start
 ```bash
 # Clone the repository
-git clone https://github.com/[username]/prp-ai-assistant.git
+git clone https://github.com/ezekaj/prp-ai-assistant.git
 cd prp-ai-assistant
 
 # Install dependencies
