@@ -70,7 +70,9 @@ class WebhookNotificationEngine:
             try:
                 with open(config_file, 'r') as f:
                     return json.load(f)
-            except:
+            except (FileNotFoundError, json.JSONDecodeError, PermissionError) as e:
+                import logging
+                logging.debug(f"Failed to load notification config from {config_file}: {e}")
                 pass
         
         # Default configuration
@@ -232,7 +234,11 @@ class WebhookNotificationEngine:
                 # Get event from queue (with timeout)
                 try:
                     event = self.event_queue.get(timeout=1)
-                except:
+                except queue.Empty:
+                    continue
+                except Exception as e:
+                    import logging
+                    logging.error(f"Unexpected error getting event from queue: {e}")
                     continue
                 
                 # Check if event should be aggregated

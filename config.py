@@ -14,16 +14,29 @@ logger = get_logger(__name__)
 class Config:
     """Base configuration class using environment variables"""
     
-    # Application settings
-    SECRET_KEY: str = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    # Application settings - NO DEFAULT SECRETS
+    SECRET_KEY: str = os.environ.get('SECRET_KEY')
+    JWT_SECRET_KEY: str = os.environ.get('JWT_SECRET_KEY')
     PRP_ENV: str = os.environ.get('PRP_ENV', 'development')
     PORT: int = int(os.environ.get('PORT', '8000'))
     
-    # Database configuration
+    # Database configuration with connection pooling
     DATABASE_URL: str = os.environ.get('DATABASE_URL', 'postgresql://localhost/prp_dev')
+    
+    # Database pool configuration
+    SQLALCHEMY_ENGINE_OPTIONS = {
+        'pool_size': int(os.environ.get('DB_POOL_SIZE', '20')),
+        'max_overflow': int(os.environ.get('DB_MAX_OVERFLOW', '40')),
+        'pool_recycle': int(os.environ.get('DB_POOL_RECYCLE', '3600')),
+        'pool_pre_ping': True,
+        'pool_timeout': int(os.environ.get('DB_POOL_TIMEOUT', '30')),
+        'echo': os.environ.get('DB_ECHO', 'false').lower() == 'true'
+    }
     
     # Redis configuration
     REDIS_URL: str = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
+    REDIS_POOL_SIZE: int = int(os.environ.get('REDIS_POOL_SIZE', '10'))
+    REDIS_TIMEOUT: int = int(os.environ.get('REDIS_TIMEOUT', '5'))
     
     # Analytics settings
     ANALYTICS_RETENTION_DAYS: int = int(os.environ.get('ANALYTICS_RETENTION_DAYS', '90'))
@@ -54,15 +67,23 @@ class Config:
     @classmethod
     def validate(cls):
         """Validate required configuration"""
-        required_vars = ['SECRET_KEY', 'DATABASE_URL']
+        required_vars = ['SECRET_KEY', 'JWT_SECRET_KEY', 'DATABASE_URL']
         missing_vars = []
         
         for var in required_vars:
-            if not getattr(cls, var) or getattr(cls, var) == f'dev-{var.lower()}-change-in-production':
+            value = getattr(cls, var)
+            if not value:
                 missing_vars.append(var)
         
         if missing_vars:
             raise ValueError(f"Missing required environment variables: {', '.join(missing_vars)}")
+            
+        # Validate secrets strength in production
+        if cls.is_production():
+            if len(cls.SECRET_KEY) < 32:
+                raise ValueError("SECRET_KEY must be at least 32 characters in production")
+            if len(cls.JWT_SECRET_KEY) < 32:
+                raise ValueError("JWT_SECRET_KEY must be at least 32 characters in production")
     
     @classmethod
     def is_production(cls) -> bool:

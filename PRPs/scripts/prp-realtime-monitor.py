@@ -93,7 +93,9 @@ class Factor12Monitor:
             try:
                 with open(prefs_file, 'r') as f:
                     return json.load(f)
-            except:
+            except (FileNotFoundError, json.JSONDecodeError, PermissionError) as e:
+                import logging
+                logging.debug(f"Failed to load user preferences from {prefs_file}: {e}")
                 pass
         return {
             'notification_level': 'warning',
@@ -110,7 +112,9 @@ class Factor12Monitor:
             try:
                 with open(learning_file, 'r') as f:
                     return json.load(f)
-            except:
+            except (FileNotFoundError, json.JSONDecodeError, PermissionError) as e:
+                import logging
+                logging.debug(f"Failed to load learning data from {learning_file}: {e}")
                 pass
         return {
             'user_actions': [],
@@ -485,7 +489,9 @@ class Factor12Monitor:
                         ))
                     else:
                         score += 0.1  # Incremental score for clean files
-            except:
+            except (FileNotFoundError, PermissionError, UnicodeDecodeError) as e:
+                import logging
+                logging.debug(f"Failed to check config compliance for file in compliance check: {e}")
                 pass
         
         return min(score, 1.0), alerts

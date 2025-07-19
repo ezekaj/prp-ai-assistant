@@ -1,0 +1,30 @@
+# PRP System Docker Container
+FROM python:3.11-slim
+
+# Set UTF-8 encoding to handle emojis
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
+ENV PYTHONIOENCODING=UTF-8
+
+# Set working directory
+WORKDIR /app
+
+# Copy only necessary files (no modifications to existing code)
+COPY requirements.txt ./
+COPY PRPs ./PRPs
+COPY prp_app.py ./
+COPY prp_models.py ./
+COPY prp_tasks.py ./
+COPY .env ./
+
+# Install dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Create volume mount points for persistent data
+VOLUME ["/app/PRPs/analytics", "/app/PRPs/monitoring", "/app/.prp"]
+
+# Expose port if needed (adjust based on your app)
+EXPOSE 5000
+
+# Run the setup script with proper encoding
+CMD ["python", "-u", "PRPs/scripts/setup-prp-system.py"]

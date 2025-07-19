@@ -1,0 +1,107 @@
+# Prometheus configuration for PRP AI Assistant monitoring
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'prp-production'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          # - alertmanager:9093
+
+# Rules files
+rule_files:
+  # - "alert_rules.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # PRP API Application
+  - job_name: 'prp-api'
+    static_configs:
+      - targets: ['prp-api:8000']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    scrape_timeout: 10s
+    honor_labels: true
+    params:
+      format: ['prometheus']
+
+  # Node Exporter (for system metrics)
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 30s
+
+  # PostgreSQL Exporter
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  # Redis Exporter
+  - job_name: 'redis-exporter'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+    scrape_interval: 30s
+
+  # Nginx Exporter
+  - job_name: 'nginx-exporter'
+    static_configs:
+      - targets: ['nginx-exporter:9113']
+    scrape_interval: 30s
+
+  # Custom application metrics
+  - job_name: 'prp-custom-metrics'
+    static_configs:
+      - targets: ['prp-api:8000']
+    scrape_interval: 15s
+    metrics_path: /metrics
+    honor_labels: true
+    metric_relabel_configs:
+      # Add custom labels
+      - source_labels: [__name__]
+        regex: 'prp_.*'
+        target_label: application
+        replacement: 'prp-ai-assistant'
+      
+      # Rename HTTP metrics for better organization
+      - source_labels: [__name__]
+        regex: 'http_requests_total'
+        target_label: __name__
+        replacement: 'prp_http_requests_total'
+      
+      - source_labels: [__name__]
+        regex: 'http_request_duration_seconds'
+        target_label: __name__
+        replacement: 'prp_http_request_duration_seconds'
+
+# Storage configuration
+storage:
+  tsdb:
+    retention.time: 30d
+    retention.size: 10GB
+    wal-compression: true
+
+# Remote write configuration (for long-term storage)
+# remote_write:
+#   - url: "https://your-remote-prometheus-endpoint.com/api/v1/write"
+#     basic_auth:
+#       username: "your-username"
+#       password: "your-password"
+
+# Global limits
+global:
+  external_labels:
+    monitor: 'prp-monitor'
+    datacenter: 'us-east-1'

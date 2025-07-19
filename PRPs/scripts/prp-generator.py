@@ -56,7 +56,9 @@ class PRPGenerator:
                              if isinstance(node, ast.FunctionDef)]
             }
             return patterns
-        except:
+        except (FileNotFoundError, PermissionError, UnicodeDecodeError, SyntaxError) as e:
+            import logging
+            logging.debug(f"Failed to analyze codebase patterns: {e}")
             return {}
     
     def generate_prp(self, feature_name, requirements, complexity=5):

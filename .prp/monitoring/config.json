@@ -1,0 +1,48 @@
+{
+  "version": "2.0",
+  "monitoring": {
+    "enabled": true,
+    "real_time": true,
+    "scan_interval": 5,
+    "notification_level": "warning",
+    "auto_fix_enabled": false,
+    "benchmarking": true
+  },
+  "weights": {
+    "codebase": 8,
+    "dependencies": 10,
+    "config": 10,
+    "backing_services": 7,
+    "build_release_run": 8,
+    "processes": 8,
+    "port_binding": 5,
+    "concurrency": 6,
+    "disposability": 8,
+    "dev_prod_parity": 8,
+    "logs": 6,
+    "admin_processes": 5
+  },
+  "thresholds": {
+    "excellent": 90,
+    "good": 75,
+    "needs_improvement": 50,
+    "critical": 30
+  },
+  "alerts": {
+    "slack_webhook": null,
+    "email": null,
+    "console": true,
+    "file_logging": true
+  },
+  "auto_fix": {
+    "enabled": false,
+    "confidence_threshold": 0.85,
+    "require_approval": true,
+    "allowed_fixes": [
+      "create_gitignore",
+      "create_env_example",
+      "update_dependencies",
+      "fix_port_binding"
+    ]
+  }
+}

@@ -1,0 +1,25 @@
+PRP-12Factor Compliance Report
+Generated: 2025-07-19 03:04:27
+Overall Score: 80.0%
+Status: GOOD - Minor improvements needed
+
+Factor Scores:
+  codebase: 100.0% - EXCELLENT
+  dependencies: 40.0% - CRITICAL
+  config: 100.0% - EXCELLENT
+  backing_services: 90.0% - EXCELLENT
+  build_release_run: 70.0% - NEEDS IMPROVEMENT
+  processes: 50.0% - NEEDS IMPROVEMENT
+  port_binding: 90.0% - EXCELLENT
+  concurrency: 90.0% - EXCELLENT
+  disposability: 90.0% - EXCELLENT
+  dev_prod_parity: 50.0% - NEEDS IMPROVEMENT
+  logs: 90.0% - EXCELLENT
+  admin_processes: 100.0% - EXCELLENT
+
+Top Issues:
+  - [dependencies] Dependencies not pinned to specific versions
+  - [dependencies] Dependency conflicts detected
+  - [config] Potential hardcoded secret in .prp\monitoring\run_monitor.py
+  - [processes] Potential stateful operation in cache.py
+  - [dev_prod_parity] Missing environment-specific configuration files

@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  prp-system:
+    build:
+      context: .
+      dockerfile: Dockerfile.prp
+    container_name: prp-12factor-system
+    environment:
+      - PYTHONUNBUFFERED=1
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+    volumes:
+      # Mount directories for persistent data without modifying original structure
+      - ./PRPs/analytics:/app/PRPs/analytics
+      - ./PRPs/monitoring:/app/PRPs/monitoring
+      - ./.prp:/app/.prp
+    restart: unless-stopped
+    tty: true
+    stdin_open: true
+    networks:
+      - prp-network
+
+networks:
+  prp-network:
+    driver: bridge

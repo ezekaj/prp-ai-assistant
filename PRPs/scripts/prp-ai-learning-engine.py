@@ -96,7 +96,11 @@ class AILearningEngine:
             'file_patterns': self._extract_file_pattern_features,
             'dependency_patterns': self._extract_dependency_features,
             'config_patterns': self._extract_config_features,
-            'temporal_patterns': self._extract_temporal_features
+            'temporal_patterns': self._extract_temporal_features,
+            'semantic_analysis': self._extract_semantic_features,
+            'performance_patterns': self._extract_performance_features,
+            'security_patterns': self._extract_security_features,
+            'architecture_patterns': self._extract_architecture_features
         }
         
         logger.info("AI Learning Engine initialized with {len(self.user_actions)} historical actions")
@@ -565,23 +569,43 @@ class AILearningEngine:
             }
         }
     
-    # Feature extraction methods
+    # Enhanced Feature extraction methods with contextual understanding
     def _extract_code_complexity_features(self, file_path: str) -> Dict[str, Any]:
-        """Extract code complexity features"""
+        """Extract advanced code complexity features with semantic analysis"""
         try:
             with open(file_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             
             lines = content.split('\n')
-            return {
+            
+            # Basic metrics
+            features = {
                 'line_count': len(lines),
                 'non_empty_lines': len([line for line in lines if line.strip()]),
-                'function_count': len(re.findall(r'def\s+\w+', content)),
-                'class_count': len(re.findall(r'class\s+\w+', content)),
-                'complexity_score': min(len(lines) / 100, 1.0)  # Simplified complexity
+                'comment_lines': len([line for line in lines if line.strip().startswith(('#', '//', '/*', '*'))]),
+                'function_count': len(re.findall(r'(def|function|func|fn)\s+\w+', content)),
+                'class_count': len(re.findall(r'(class|interface|struct)\s+\w+', content)),
+                'import_count': len(re.findall(r'(import|from\s+\w+\s+import|require|use)\s+', content)),
             }
-        except:
-            return {'error': True}
+            
+            # Advanced semantic analysis
+            features.update(self._analyze_code_patterns(content, file_path))
+            features.update(self._analyze_code_quality(content))
+            features.update(self._detect_architectural_patterns(content))
+            
+            # Calculate composite complexity score
+            complexity_factors = [
+                features['line_count'] / 500,  # Line complexity
+                features.get('cyclomatic_complexity', 0) / 10,  # Cyclomatic complexity
+                features.get('nesting_depth', 0) / 5,  # Nesting complexity
+                features.get('coupling_score', 0),  # Coupling complexity
+            ]
+            features['complexity_score'] = min(sum(complexity_factors) / len(complexity_factors), 1.0)
+            
+            return features
+        except Exception as e:
+            logger.error(f"Error extracting code complexity: {e}")
+            return {'error': True, 'error_message': str(e)}
     
     def _extract_file_pattern_features(self, file_path: str) -> Dict[str, Any]:
         """Extract file pattern features"""
@@ -608,7 +632,9 @@ class AILearningEngine:
                     with open(file_path, 'r') as f:
                         content = f.read()
                         features[f'{dep_file}_lines'] = len(content.split('\n'))
-                except:
+                except (FileNotFoundError, PermissionError, UnicodeDecodeError) as e:
+                    import logging
+                    logging.debug(f"Failed to read dependency file {file_path}: {e}")
                     pass
             else:
                 features[f'has_{dep_file}'] = False
@@ -635,7 +661,9 @@ class AILearningEngine:
                     content = f.read()
                     if 'localhost' in content or '127.0.0.1' in content:
                         hardcoded_count += 1
-            except:
+            except (FileNotFoundError, PermissionError, UnicodeDecodeError) as e:
+                import logging
+                logging.debug(f"Failed to read Python file {py_file} for hardcoded values check: {e}")
                 pass
         
         features['hardcoded_values_found'] = hardcoded_count
@@ -651,6 +679,508 @@ class AILearningEngine:
             'month': timestamp.month,
             'quarter': (timestamp.month - 1) // 3 + 1
         }
+    
+    def _analyze_code_patterns(self, content: str, file_path: str) -> Dict[str, Any]:
+        """Analyze code patterns and anti-patterns"""
+        patterns = {
+            'has_error_handling': bool(re.search(r'(try|catch|except|finally|rescue)', content)),
+            'has_logging': bool(re.search(r'(log|logger|logging|console\.log|print)', content)),
+            'has_tests': bool(re.search(r'(test_|_test|Test|describe|it\(|assert|expect)', content)),
+            'has_documentation': bool(re.search(r'("""[^"]+"""|/\*\*[^*]+\*/|///)', content)),
+            'uses_async': bool(re.search(r'(async|await|Promise|Future|coroutine)', content)),
+            'uses_types': bool(re.search(r'(: \w+|-> \w+|<\w+>|interface|type\s+\w+)', content)),
+        }
+        
+        # Detect common anti-patterns
+        anti_patterns = {
+            'hardcoded_values': len(re.findall(r'["\']\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}["\']|localhost|password\s*=\s*["\'][^"\'
+]+["\']', content)),
+            'global_variables': len(re.findall(r'(global\s+\w+|window\.\w+\s*=|GLOBALS)', content)),
+            'long_functions': len([m for m in re.finditer(r'(def|function|func)\s+\w+', content) if self._estimate_function_length(content, m.start()) > 50]),
+            'deep_nesting': self._calculate_max_nesting_depth(content),
+            'duplicate_code': self._detect_duplicate_patterns(content),
+        }
+        
+        patterns['anti_pattern_score'] = sum(1 for v in anti_patterns.values() if v > 0) / len(anti_patterns)
+        patterns.update({f'anti_{k}': v for k, v in anti_patterns.items()})
+        
+        return patterns
+    
+    def _analyze_code_quality(self, content: str) -> Dict[str, Any]:
+        """Analyze code quality metrics"""
+        lines = content.split('\n')
+        
+        # Calculate cyclomatic complexity (simplified)
+        decision_keywords = ['if', 'elif', 'else', 'for', 'while', 'case', 'catch', 'except']
+        cyclomatic_complexity = 1  # Base complexity
+        for line in lines:
+            for keyword in decision_keywords:
+                if re.search(rf'\b{keyword}\b', line):
+                    cyclomatic_complexity += 1
+        
+        # Code style consistency
+        indent_style = self._detect_indent_style(lines)
+        naming_conventions = self._analyze_naming_conventions(content)
+        
+        return {
+            'cyclomatic_complexity': cyclomatic_complexity,
+            'average_line_length': sum(len(line) for line in lines) / max(len(lines), 1),
+            'max_line_length': max((len(line) for line in lines), default=0),
+            'indent_consistency': indent_style['consistency_score'],
+            'naming_consistency': naming_conventions['consistency_score'],
+            'code_to_comment_ratio': len([l for l in lines if l.strip() and not l.strip().startswith(('#', '//'))])
+                                     / max(len([l for l in lines if l.strip().startswith(('#', '//'))]), 1),
+        }
+    
+    def _detect_architectural_patterns(self, content: str) -> Dict[str, Any]:
+        """Detect architectural patterns in code"""
+        patterns = {
+            'mvc_pattern': self._detect_mvc_pattern(content),
+            'singleton_pattern': bool(re.search(r'(getInstance|_instance|Singleton)', content)),
+            'factory_pattern': bool(re.search(r'(Factory|create\w+|build\w+)', content)),
+            'observer_pattern': bool(re.search(r'(Observer|Listener|EventEmitter|subscribe|notify)', content)),
+            'repository_pattern': bool(re.search(r'(Repository|\w+Repo|DataAccess)', content)),
+            'dependency_injection': bool(re.search(r'(inject|@Inject|Container|ServiceProvider)', content)),
+        }
+        
+        # Detect layered architecture
+        layer_keywords = {
+            'presentation': ['Controller', 'View', 'Handler', 'Route'],
+            'business': ['Service', 'Manager', 'Logic', 'UseCase'],
+            'data': ['Repository', 'Model', 'Entity', 'DAO'],
+        }
+        
+        detected_layers = {}
+        for layer, keywords in layer_keywords.items():
+            detected_layers[f'{layer}_layer'] = any(keyword in content for keyword in keywords)
+        
+        patterns.update(detected_layers)
+        patterns['architecture_score'] = sum(1 for v in patterns.values() if v) / len(patterns)
+        
+        return patterns
+    
+    def _extract_semantic_features(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract semantic understanding of code intent"""
+        features = {
+            'intent_classification': self._classify_code_intent(context),
+            'domain_concepts': self._extract_domain_concepts(context),
+            'api_patterns': self._analyze_api_patterns(context),
+            'data_flow': self._analyze_data_flow(context),
+        }
+        return features
+    
+    def _extract_performance_features(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract performance-related features"""
+        file_path = context.get('file_path', '')
+        if not file_path or not Path(file_path).exists():
+            return {}
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            features = {
+                'has_caching': bool(re.search(r'(cache|memoize|lru_cache|Cache)', content)),
+                'has_lazy_loading': bool(re.search(r'(lazy|defer|Lazy|Promise\.all)', content)),
+                'has_pagination': bool(re.search(r'(paginate|pagination|limit|offset|page)', content)),
+                'has_indexing': bool(re.search(r'(index|Index|KEY|createIndex)', content)),
+                'uses_bulk_operations': bool(re.search(r'(bulk|batch|Bulk|insertMany|updateMany)', content)),
+                'has_connection_pooling': bool(re.search(r'(pool|Pool|connectionPool|maxConnections)', content)),
+            }
+            
+            # Detect potential performance issues
+            issues = {
+                'nested_loops': len(re.findall(r'for.*:\s*\n\s*for', content)),
+                'synchronous_io': len(re.findall(r'(readFileSync|requests\.get(?!\s*\(.*async)|open\([^)]+\)(?!.*async))', content)),
+                'inefficient_queries': len(re.findall(r'SELECT\s+\*|N\+1|findAll\(\)|getAll\(\)', content, re.IGNORECASE)),
+            }
+            
+            features['performance_score'] = 1.0 - (sum(1 for v in issues.values() if v > 0) / len(issues))
+            features.update({f'perf_issue_{k}': v for k, v in issues.items()})
+            
+            return features
+        except Exception as e:
+            logger.error(f"Error extracting performance features: {e}")
+            return {}
+    
+    def _extract_security_features(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract security-related features"""
+        file_path = context.get('file_path', '')
+        if not file_path or not Path(file_path).exists():
+            return {}
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            features = {
+                'has_input_validation': bool(re.search(r'(validate|sanitize|escape|clean)', content)),
+                'has_authentication': bool(re.search(r'(auth|Auth|authenticate|jwt|token)', content)),
+                'has_authorization': bool(re.search(r'(authorize|permission|role|access)', content)),
+                'has_encryption': bool(re.search(r'(encrypt|decrypt|hash|bcrypt|crypto)', content)),
+                'uses_prepared_statements': bool(re.search(r'(\?|prepare|parameterized|bindParam)', content)),
+                'has_rate_limiting': bool(re.search(r'(rateLimit|throttle|rate.limit)', content)),
+            }
+            
+            # Detect security vulnerabilities
+            vulnerabilities = {
+                'sql_injection_risk': len(re.findall(r'["\']\s*\+.*\+\s*["\'].*(?:SELECT|INSERT|UPDATE|DELETE)', content, re.IGNORECASE)),
+                'xss_risk': len(re.findall(r'innerHTML\s*=|document\.write|eval\(', content)),
+                'hardcoded_secrets': len(re.findall(r'(api_key|secret|password)\s*=\s*["\'][^"\'{]+["\']', content)),
+                'insecure_random': len(re.findall(r'Math\.random|rand\(\)|random\.random\(\)', content)),
+            }
+            
+            features['security_score'] = 1.0 - (sum(1 for v in vulnerabilities.values() if v > 0) / len(vulnerabilities))
+            features.update({f'vuln_{k}': v for k, v in vulnerabilities.items()})
+            
+            return features
+        except Exception as e:
+            logger.error(f"Error extracting security features: {e}")
+            return {}
+    
+    def _extract_architecture_features(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Extract architectural features and patterns"""
+        features = {
+            'modularity_score': self._calculate_modularity_score(context),
+            'coupling_score': self._calculate_coupling_score(context),
+            'cohesion_score': self._calculate_cohesion_score(context),
+            'abstraction_level': self._determine_abstraction_level(context),
+        }
+        return features
+    
+    # Helper methods for advanced analysis
+    def _estimate_function_length(self, content: str, start_pos: int) -> int:
+        """Estimate the length of a function starting at given position"""
+        lines = content[start_pos:].split('\n')
+        indent_level = len(lines[0]) - len(lines[0].lstrip())
+        function_lines = 1
+        
+        for line in lines[1:]:
+            if line.strip() and len(line) - len(line.lstrip()) <= indent_level:
+                break
+            function_lines += 1
+        
+        return function_lines
+    
+    def _calculate_max_nesting_depth(self, content: str) -> int:
+        """Calculate maximum nesting depth in code"""
+        max_depth = 0
+        current_depth = 0
+        
+        for char in content:
+            if char in '{([':
+                current_depth += 1
+                max_depth = max(max_depth, current_depth)
+            elif char in '})]':
+                current_depth = max(0, current_depth - 1)
+        
+        return max_depth
+    
+    def _detect_duplicate_patterns(self, content: str) -> int:
+        """Detect duplicate code patterns"""
+        lines = content.split('\n')
+        duplicates = 0
+        
+        # Simple duplicate detection - look for similar lines
+        line_hashes = {}
+        for line in lines:
+            if len(line.strip()) > 10:  # Only consider meaningful lines
+                line_hash = hashlib.md5(line.strip().encode()).hexdigest()
+                if line_hash in line_hashes:
+                    duplicates += 1
+                else:
+                    line_hashes[line_hash] = 1
+        
+        return duplicates
+    
+    def _detect_indent_style(self, lines: List[str]) -> Dict[str, Any]:
+        """Detect indentation style and consistency"""
+        space_count = 0
+        tab_count = 0
+        indent_sizes = []
+        
+        for line in lines:
+            if line and line[0] in ' \t':
+                if line[0] == ' ':
+                    space_count += 1
+                    indent_size = len(line) - len(line.lstrip())
+                    if indent_size > 0:
+                        indent_sizes.append(indent_size)
+                else:
+                    tab_count += 1
+        
+        consistency_score = 1.0
+        if space_count > 0 and tab_count > 0:
+            consistency_score = 0.5  # Mixed indentation
+        elif indent_sizes:
+            # Check if indent sizes are consistent multiples
+            common_indent = min(indent_sizes) if indent_sizes else 0
+            if common_indent > 0:
+                consistent_indents = sum(1 for size in indent_sizes if size % common_indent == 0)
+                consistency_score = consistent_indents / len(indent_sizes)
+        
+        return {
+            'style': 'spaces' if space_count > tab_count else 'tabs',
+            'consistency_score': consistency_score,
+            'common_indent_size': min(indent_sizes) if indent_sizes else 0,
+        }
+    
+    def _analyze_naming_conventions(self, content: str) -> Dict[str, Any]:
+        """Analyze naming conventions used in code"""
+        # Extract various identifiers
+        function_names = re.findall(r'(?:def|function|func)\s+(\w+)', content)
+        class_names = re.findall(r'(?:class|interface)\s+(\w+)', content)
+        variable_names = re.findall(r'(?:let|const|var|=)\s+(\w+)\s*[=:]', content)
+        
+        conventions = {
+            'camelCase': 0,
+            'snake_case': 0,
+            'PascalCase': 0,
+            'kebab-case': 0,
+        }
+        
+        all_names = function_names + variable_names
+        for name in all_names:
+            if re.match(r'^[a-z][a-zA-Z0-9]*$', name):
+                conventions['camelCase'] += 1
+            elif re.match(r'^[a-z][a-z0-9_]*$', name):
+                conventions['snake_case'] += 1
+        
+        for name in class_names:
+            if re.match(r'^[A-Z][a-zA-Z0-9]*$', name):
+                conventions['PascalCase'] += 1
+        
+        total = sum(conventions.values())
+        consistency_score = max(conventions.values()) / total if total > 0 else 1.0
+        
+        return {
+            'dominant_convention': max(conventions, key=conventions.get),
+            'consistency_score': consistency_score,
+            'convention_distribution': conventions,
+        }
+    
+    def _detect_mvc_pattern(self, content: str) -> bool:
+        """Detect if code follows MVC pattern"""
+        mvc_keywords = {
+            'model': ['Model', 'Entity', 'Schema', 'Table'],
+            'view': ['View', 'Template', 'Component', 'render'],
+            'controller': ['Controller', 'Handler', 'Route', 'Action'],
+        }
+        
+        detected_components = 0
+        for component, keywords in mvc_keywords.items():
+            if any(keyword in content for keyword in keywords):
+                detected_components += 1
+        
+        return detected_components >= 2
+    
+    def _classify_code_intent(self, context: Dict[str, Any]) -> str:
+        """Classify the intent/purpose of code"""
+        file_path = context.get('file_path', '')
+        if not file_path:
+            return 'unknown'
+        
+        file_name = Path(file_path).name.lower()
+        
+        # Common patterns for intent classification
+        if 'test' in file_name or 'spec' in file_name:
+            return 'testing'
+        elif 'config' in file_name or 'settings' in file_name:
+            return 'configuration'
+        elif 'model' in file_name or 'entity' in file_name:
+            return 'data_model'
+        elif 'controller' in file_name or 'handler' in file_name:
+            return 'request_handling'
+        elif 'service' in file_name or 'manager' in file_name:
+            return 'business_logic'
+        elif 'util' in file_name or 'helper' in file_name:
+            return 'utility'
+        elif 'migration' in file_name:
+            return 'database_migration'
+        else:
+            return 'general'
+    
+    def _extract_domain_concepts(self, context: Dict[str, Any]) -> List[str]:
+        """Extract domain-specific concepts from code"""
+        # This would ideally use NLP, but for now we'll use pattern matching
+        file_path = context.get('file_path', '')
+        if not file_path or not Path(file_path).exists():
+            return []
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Extract class and function names as potential domain concepts
+            concepts = set()
+            
+            # Class names often represent domain entities
+            class_names = re.findall(r'class\s+(\w+)', content)
+            concepts.update(class_names)
+            
+            # Extract meaningful function names
+            function_names = re.findall(r'def\s+(\w+)', content)
+            for name in function_names:
+                # Split camelCase or snake_case to extract concepts
+                parts = re.split(r'_|(?=[A-Z])', name)
+                concepts.update(part.lower() for part in parts if len(part) > 2)
+            
+            # Common domain indicators
+            domain_patterns = [
+                r'\b(User|Customer|Order|Product|Payment|Invoice|Account)\b',
+                r'\b(create|update|delete|fetch|process|validate|calculate)\w*\b',
+            ]
+            
+            for pattern in domain_patterns:
+                matches = re.findall(pattern, content, re.IGNORECASE)
+                concepts.update(match.lower() for match in matches)
+            
+            return list(concepts)[:20]  # Limit to top 20 concepts
+        except Exception as e:
+            logger.error(f"Error extracting domain concepts: {e}")
+            return []
+    
+    def _analyze_api_patterns(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze API design patterns"""
+        file_path = context.get('file_path', '')
+        if not file_path or not Path(file_path).exists():
+            return {}
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            patterns = {
+                'rest_api': bool(re.search(r'(GET|POST|PUT|DELETE|PATCH)\s*[\(\'"]', content)),
+                'graphql': bool(re.search(r'(query|mutation|subscription|GraphQL)', content)),
+                'rpc': bool(re.search(r'(RPC|jsonrpc|grpc)', content, re.IGNORECASE)),
+                'websocket': bool(re.search(r'(WebSocket|ws:|socket\.io)', content)),
+                'uses_versioning': bool(re.search(r'(/v\d+/|version\s*=|api_version)', content)),
+                'has_pagination': bool(re.search(r'(page|limit|offset|cursor|next|previous)', content)),
+                'has_filtering': bool(re.search(r'(filter|where|query|search)', content)),
+                'has_sorting': bool(re.search(r'(sort|order|orderBy)', content)),
+            }
+            
+            return patterns
+        except Exception as e:
+            logger.error(f"Error analyzing API patterns: {e}")
+            return {}
+    
+    def _analyze_data_flow(self, context: Dict[str, Any]) -> Dict[str, Any]:
+        """Analyze data flow patterns in code"""
+        file_path = context.get('file_path', '')
+        if not file_path or not Path(file_path).exists():
+            return {}
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Simple data flow analysis
+            data_flow = {
+                'input_sources': len(re.findall(r'(request\.|input\(|argv|environ|query)', content)),
+                'output_destinations': len(re.findall(r'(response\.|print\(|write\(|send\()', content)),
+                'data_transformations': len(re.findall(r'(map\(|filter\(|reduce\(|transform|convert|parse)', content)),
+                'data_validations': len(re.findall(r'(validate|check|verify|assert|require)', content)),
+                'data_persistence': len(re.findall(r'(save\(|insert\(|update\(|delete\(|persist)', content)),
+            }
+            
+            # Calculate data flow complexity
+            total_operations = sum(data_flow.values())
+            data_flow['complexity'] = min(total_operations / 20, 1.0)  # Normalize to 0-1
+            
+            return data_flow
+        except Exception as e:
+            logger.error(f"Error analyzing data flow: {e}")
+            return {}
+    
+    def _calculate_modularity_score(self, context: Dict[str, Any]) -> float:
+        """Calculate modularity score of code"""
+        # Simplified modularity calculation
+        file_path = context.get('file_path', '')
+        if not file_path:
+            return 0.5
+        
+        # Check file organization
+        path_parts = Path(file_path).parts
+        depth_score = min(len(path_parts) / 5, 1.0)  # Reasonable depth
+        
+        # Check for module patterns
+        if any(part in ['src', 'lib', 'modules', 'components'] for part in path_parts):
+            return min(depth_score + 0.3, 1.0)
+        
+        return depth_score
+    
+    def _calculate_coupling_score(self, context: Dict[str, Any]) -> float:
+        """Calculate coupling score (lower is better)"""
+        file_path = context.get('file_path', '')
+        if not file_path or not Path(file_path).exists():
+            return 0.5
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Count imports/dependencies
+            imports = len(re.findall(r'(import|require|include|use)\s+', content))
+            
+            # Normalize (assuming > 20 imports is high coupling)
+            return min(imports / 20, 1.0)
+        except (FileNotFoundError, PermissionError, UnicodeDecodeError, re.error) as e:
+            import logging
+            logging.debug(f"Failed to calculate coupling score for {context.get('file_path', 'unknown')}: {e}")
+            return 0.5
+    
+    def _calculate_cohesion_score(self, context: Dict[str, Any]) -> float:
+        """Calculate cohesion score (higher is better)"""
+        # Simplified cohesion - based on related functionality
+        file_path = context.get('file_path', '')
+        if not file_path or not Path(file_path).exists():
+            return 0.5
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Check if functions/methods are related (simplified)
+            functions = re.findall(r'def\s+(\w+)', content)
+            if not functions:
+                return 0.7  # No functions, assume cohesive
+            
+            # Check for common prefixes/patterns in function names
+            common_prefixes = 0
+            for i in range(len(functions)):
+                for j in range(i + 1, len(functions)):
+                    if functions[i][:3] == functions[j][:3]:
+                        common_prefixes += 1
+            
+            if len(functions) > 1:
+                cohesion = common_prefixes / (len(functions) * (len(functions) - 1) / 2)
+                return min(cohesion * 2, 1.0)  # Scale up
+            
+            return 0.7
+        except (FileNotFoundError, PermissionError, UnicodeDecodeError, re.error) as e:
+            import logging
+            logging.debug(f"Failed to calculate cohesion score for {context.get('file_path', 'unknown')}: {e}")
+            return 0.5
+    
+    def _determine_abstraction_level(self, context: Dict[str, Any]) -> str:
+        """Determine the abstraction level of code"""
+        file_path = context.get('file_path', '')
+        if not file_path:
+            return 'unknown'
+        
+        file_name = Path(file_path).name.lower()
+        
+        # Determine based on common patterns
+        if any(pattern in file_name for pattern in ['interface', 'abstract', 'base']):
+            return 'high'
+        elif any(pattern in file_name for pattern in ['impl', 'concrete', 'handler']):
+            return 'low'
+        elif any(pattern in file_name for pattern in ['service', 'manager', 'controller']):
+            return 'medium'
+        else:
+            return 'unknown'
 
 def main():
     """Demo the AI learning engine"""

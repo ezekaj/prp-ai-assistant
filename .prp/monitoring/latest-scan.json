@@ -1,0 +1,76 @@
+{
+  "timestamp": "2025-07-19T03:04:27.100345",
+  "overall_score": 80.00000000000001,
+  "status": "GOOD - Minor improvements needed",
+  "factors": {
+    "codebase": {
+      "score": 1.0,
+      "issues": [],
+      "status": "EXCELLENT"
+    },
+    "dependencies": {
+      "score": 0.4,
+      "issues": [
+        "Dependencies not pinned to specific versions",
+        "Dependency conflicts detected"
+      ],
+      "status": "CRITICAL"
+    },
+    "config": {
+      "score": 1.0,
+      "issues": [
+        "Potential hardcoded secret in .prp\\monitoring\\run_monitor.py"
+      ],
+      "status": "EXCELLENT"
+    },
+    "backing_services": {
+      "score": 0.9,
+      "issues": [],
+      "status": "EXCELLENT"
+    },
+    "build_release_run": {
+      "score": 0.7,
+      "issues": [],
+      "status": "NEEDS IMPROVEMENT"
+    },
+    "processes": {
+      "score": 0.5,
+      "issues": [
+        "Potential stateful operation in cache.py"
+      ],
+      "status": "NEEDS IMPROVEMENT"
+    },
+    "port_binding": {
+      "score": 0.9,
+      "issues": [],
+      "status": "EXCELLENT"
+    },
+    "concurrency": {
+      "score": 0.9,
+      "issues": [],
+      "status": "EXCELLENT"
+    },
+    "disposability": {
+      "score": 0.9,
+      "issues": [],
+      "status": "EXCELLENT"
+    },
+    "dev_prod_parity": {
+      "score": 0.5,
+      "issues": [
+        "Missing environment-specific configuration files"
+      ],
+      "status": "NEEDS IMPROVEMENT"
+    },
+    "logs": {
+      "score": 0.9,
+      "issues": [],
+      "status": "EXCELLENT"
+    },
+    "admin_processes": {
+      "score": 1.0,
+      "issues": [],
+      "status": "EXCELLENT"
+    }
+  }
+}
