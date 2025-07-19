@@ -8,7 +8,7 @@ import asyncio
 import json
 import re
 from pathlib import Path
-from typing import Dict, List, Any, Optional, Callable, Set
+from typing import Dict, List, Any, Optional, Callable, Set, Tuple
 from dataclasses import dataclass, field
 from datetime import datetime
 import logging
@@ -811,7 +811,7 @@ async def demo_real_time_assistant():
     """Demo the real-time assistant"""
     assistant = RealTimeAssistant()
     
-    print("🤖 Real-Time AI Assistant Demo")
+    print("Real-Time AI Assistant Demo")
     print("=" * 50)
     
     # Example Python code with issues
@@ -838,42 +838,42 @@ def process_data(data):
 '''
     
     # Analyze the code
-    print("\n📝 Analyzing sample code...")
+    print("\nAnalyzing sample code...")
     review = await assistant.analyze_file("sample.py", sample_code)
     
-    print(f"\n📊 Overall Score: {review.overall_score:.1f}/100")
+    print(f"\nOverall Score: {review.overall_score:.1f}/100")
     
-    print("\n❌ Issues Found:")
+    print("\nIssues Found:")
     for issue in review.issues:
         icon = {
-            'critical': '🔴',
-            'high': '🟠',
-            'medium': '🟡',
-            'low': '🟢'
-        }.get(issue.priority, '⚪')
+            'critical': '[CRITICAL]',
+            'high': '[HIGH]',
+            'medium': '[MEDIUM]',
+            'low': '[LOW]'
+        }.get(issue.priority, '[INFO]')
         
-        print(f"\n{icon} [{issue.priority.upper()}] {issue.title}")
+        print(f"\n{icon} {issue.title}")
         if issue.line_number is not None:
             print(f"   Line {issue.line_number + 1}: {issue.code_snippet}")
         print(f"   {issue.description}")
         if issue.fix_snippet:
             print(f"   Suggested fix: {issue.fix_snippet}")
     
-    print("\n✅ Strengths:")
+    print("\nStrengths:")
     for strength in review.strengths:
-        print(f"   • {strength}")
+        print(f"   - {strength}")
     
-    print("\n📈 Metrics:")
+    print("\nMetrics:")
     for metric, value in review.metrics.items():
         print(f"   {metric}: {value}")
     
     # Demo live suggestions
-    print("\n\n💡 Getting live suggestions...")
+    print("\n\nGetting live suggestions...")
     suggestions = await assistant.get_live_suggestions("sample.py", cursor_position=(2, 8))
     
     print(f"Found {len(suggestions)} suggestions:")
     for suggestion in suggestions[:3]:
-        print(f"\n   • {suggestion.title}")
+        print(f"\n   - {suggestion.title}")
         print(f"     {suggestion.description}")
 
 if __name__ == "__main__":

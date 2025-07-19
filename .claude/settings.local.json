@@ -37,7 +37,8 @@
       "Bash(cloc:*)",
       "Bash(git config:*)",
       "Bash(rm:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(pip install:*)"
     ],
     "deny": []
   }
