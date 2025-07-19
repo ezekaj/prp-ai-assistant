@@ -7,11 +7,22 @@ import os
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine
 from redis import Redis
-import logging
 from dotenv import load_dotenv
+from logging_config import configure_logging, get_logger
+from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
+import time
+import uuid
 
 # Load environment variables
 load_dotenv()
+
+# Configure structured logging
+configure_logging()
+logger = get_logger(__name__)
+
+# Metrics
+REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method', 'endpoint', 'status'])
+REQUEST_DURATION = Histogram('http_request_duration_seconds', 'HTTP request duration')
 
 app = Flask(__name__)
 
@@ -45,16 +56,40 @@ def init_backing_services():
     try:
         db_engine.execute("SELECT 1")
         redis_client.ping()
-        app.logger.info("Backing services initialized successfully")
+        logger.info("backing_services_initialized", database_url=Config.DATABASE_URL, redis_url=Config.REDIS_URL)
     except Exception as e:
-        app.logger.error(f"Failed to initialize backing services: {e}")
+        logger.error("backing_services_initialization_failed", error=str(e))
         raise
 
-# Logging configuration
-logging.basicConfig(
-    level=getattr(logging, Config.LOG_LEVEL),
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
+# Request logging middleware
+from flask import g
+
+@app.before_request
+def before_request():
+    g.start_time = time.time()
+    g.request_id = str(uuid.uuid4())
+    logger.info("incoming_request",
+               request_id=g.request_id,
+               method=request.method,
+               path=request.path,
+               remote_addr=request.remote_addr)
+
+@app.after_request
+def after_request(response):
+    duration = time.time() - g.start_time
+    REQUEST_COUNT.labels(method=request.method, endpoint=request.endpoint or 'unknown', status=response.status_code).inc()
+    REQUEST_DURATION.observe(duration)
+    
+    logger.info("outgoing_response",
+               request_id=g.request_id,
+               status_code=response.status_code,
+               duration_ms=duration * 1000)
+    return response
+
+@app.route('/metrics')
+def metrics():
+    """Prometheus metrics endpoint"""
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 @app.route('/health')
 def health_check():
@@ -65,16 +100,24 @@ def health_check():
         # Check Redis
         redis_client.ping()
         
-        return jsonify({
+        health_data = {
             'status': 'healthy',
             'timestamp': os.environ.get('DYNO_STARTED_AT'),
-            'version': '2.0.0'
-        }), 200
+            'version': '2.0.0',
+            'checks': {
+                'database': 'ok',
+                'redis': 'ok'
+            }
+        }
+        logger.info("health_check_successful", **health_data)
+        return jsonify(health_data), 200
     except Exception as e:
-        return jsonify({
+        error_data = {
             'status': 'unhealthy',
             'error': str(e)
-        }), 503
+        }
+        logger.error("health_check_failed", **error_data)
+        return jsonify(error_data), 503
 
 @app.route('/api/prp/generate', methods=['POST'])
 def generate_prp():
@@ -131,7 +174,7 @@ import sys
 
 def signal_handler(sig, frame):
     """Handle shutdown signals gracefully"""
-    app.logger.info('Shutting down gracefully...')
+    logger.info("graceful_shutdown_initiated", signal=sig)
     # Close database connections
     if 'db_engine' in globals():
         db_engine.dispose()

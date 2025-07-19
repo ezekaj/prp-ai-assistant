@@ -9,6 +9,9 @@ import requests
 import psycopg2
 import redis
 from datetime import datetime
+from logging_config import get_logger
+
+logger = get_logger(__name__)
 
 def check_database():
     """Check database connectivity"""
@@ -70,16 +73,15 @@ def main():
         if not passed:
             all_passed = False
     
-    # Print results
-    print(f"Health Check Report - {datetime.now().isoformat()}")
-    print("=" * 50)
-    
-    for name, passed, message in results:
-        status = "✅ PASS" if passed else "❌ FAIL"
-        print(f"{name}: {status} - {message}")
-    
-    print("=" * 50)
-    print(f"Overall Status: {'✅ HEALTHY' if all_passed else '❌ UNHEALTHY'}")
+    # Log structured results
+    timestamp = datetime.now().isoformat()
+    logger.info("health_check_completed",
+               timestamp=timestamp,
+               overall_status="healthy" if all_passed else "unhealthy",
+               check_results=[
+                   {"name": name, "passed": passed, "message": message}
+                   for name, passed, message in results
+               ])
     
     # Exit with appropriate code
     sys.exit(0 if all_passed else 1)

@@ -1,4 +1,5 @@
-# PRP System Dependencies - 12-Factor Compliant
+# PRP System Dependencies - Source file for pip-tools
+# Run: pip-compile requirements.in to generate requirements.txt
 
 # Core Framework
 flask>=2.3.0

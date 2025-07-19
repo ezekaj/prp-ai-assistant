@@ -5,6 +5,11 @@ Configuration management for PRP System - Factor III Compliance
 
 import os
 from typing import Optional
+from logging_config import configure_logging, get_logger
+
+# Configure logging on import
+configure_logging()
+logger = get_logger(__name__)
 
 class Config:
     """Base configuration class using environment variables"""
@@ -116,12 +121,15 @@ if __name__ == '__main__':
     # Validate configuration when run directly
     try:
         config.validate()
-        print(f"✅ Configuration valid for {config.PRP_ENV} environment")
-        print(f"Database: {config.DATABASE_URL}")
-        print(f"Redis: {config.REDIS_URL}")
-        print(f"Features enabled: Predictive={config.ENABLE_PREDICTIVE_ANALYSIS}, "
-              f"Security={config.ENABLE_SECURITY_SCANNING}, "
-              f"Monitoring={config.ENABLE_PERFORMANCE_MONITORING}")
+        logger.info("configuration_validated", 
+                   environment=config.PRP_ENV,
+                   database_url=config.DATABASE_URL,
+                   redis_url=config.REDIS_URL,
+                   features={
+                       "predictive": config.ENABLE_PREDICTIVE_ANALYSIS,
+                       "security": config.ENABLE_SECURITY_SCANNING,
+                       "monitoring": config.ENABLE_PERFORMANCE_MONITORING
+                   })
     except ValueError as e:
-        print(f"❌ Configuration error: {e}")
+        logger.error("configuration_validation_failed", error=str(e))
         exit(1)

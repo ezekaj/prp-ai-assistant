@@ -8,6 +8,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 import os
+from logging_config import get_logger
+
+logger = get_logger(__name__)
 
 Base = declarative_base()
 
@@ -84,4 +87,4 @@ def get_session(database_url=None):
 if __name__ == '__main__':
     # Create tables if run directly
     engine = create_tables()
-    print("Database tables created successfully")
+    logger.info("database_tables_created_successfully", database_url=os.environ.get('DATABASE_URL', 'default'))
