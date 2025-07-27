@@ -1,0 +1,51 @@
+
+graph TB
+    subgraph "AI Component Integration System"
+        Registry[Component Registry<br/>- Message Routing<br/>- Component Discovery<br/>- History Tracking]
+        
+        subgraph "Core AI Components"
+            CodeGen[Code Generator<br/>- Generate Code<br/>- Refactor<br/>- Optimize]
+            Testing[Testing Engine<br/>- Generate Tests<br/>- Run Tests<br/>- Coverage Analysis]
+            Security[Security Analyzer<br/>- Vulnerability Scan<br/>- Security Audit<br/>- Compliance Check]
+            Orchestrator[Orchestrator<br/>- Workflow Management<br/>- Task Coordination<br/>- Pipeline Execution]
+        end
+        
+        subgraph "Integration Hub"
+            Hub[Integration Hub<br/>- Initialize Components<br/>- Manage Lifecycle<br/>- Monitor Status]
+        end
+        
+        subgraph "Message Types"
+            Request[REQUEST]
+            Response[RESPONSE]
+            Event[EVENT]
+            Command[COMMAND]
+        end
+    end
+    
+    %% Connections
+    Hub --> Registry
+    Registry --> CodeGen
+    Registry --> Testing
+    Registry --> Security
+    Registry --> Orchestrator
+    
+    CodeGen -.->|Messages| Testing
+    Testing -.->|Messages| Security
+    Security -.->|Messages| Orchestrator
+    Orchestrator -.->|Coordinates| CodeGen
+    
+    Request --> Registry
+    Response --> Registry
+    Event --> Registry
+    Command --> Registry
+    
+    %% Styling
+    classDef registry fill:#f9f,stroke:#333,stroke-width:4px
+    classDef component fill:#bbf,stroke:#333,stroke-width:2px
+    classDef message fill:#bfb,stroke:#333,stroke-width:2px
+    classDef hub fill:#fbf,stroke:#333,stroke-width:3px
+    
+    class Registry registry
+    class CodeGen,Testing,Security,Orchestrator component
+    class Request,Response,Event,Command message
+    class Hub hub

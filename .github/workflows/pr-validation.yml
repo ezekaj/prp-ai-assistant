@@ -1,0 +1,184 @@
+name: PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  # Code quality checks
+  code-quality:
+    name: Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install linting tools
+        run: |
+          pip install black flake8 isort mypy
+      
+      - name: Run Black
+        run: black --check .
+      
+      - name: Run Flake8
+        run: flake8 . --max-line-length=100 --exclude=venv,migrations
+      
+      - name: Run isort
+        run: isort --check-only .
+      
+      - name: Run mypy
+        run: mypy . --ignore-missing-imports
+
+  # 12-Factor compliance for PRs
+  twelve-factor-check:
+    name: 12-Factor Compliance Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for environment variables
+        run: |
+          echo "Checking for proper environment variable usage..."
+          
+          # Check for hardcoded values
+          if grep -r "localhost\|127.0.0.1" --include="*.py" --exclude-dir=".git" . | grep -v "test\|example"; then
+            echo "::warning::Hardcoded localhost references found"
+          fi
+          
+          # Verify config.py usage
+          if ! grep -q "os.environ" config.py; then
+            echo "::error::config.py must use environment variables"
+            exit 1
+          fi
+      
+      - name: Validate Dockerfile
+        run: |
+          # Check for USER instruction
+          if ! grep -q "^USER" Dockerfile; then
+            echo "::error::Dockerfile must include USER instruction for security"
+            exit 1
+          fi
+          
+          # Check for HEALTHCHECK
+          if ! grep -q "^HEALTHCHECK" Dockerfile; then
+            echo "::warning::Dockerfile should include HEALTHCHECK"
+          fi
+
+  # Performance regression check
+  performance-check:
+    name: Performance Check
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: testpass
+          POSTGRES_DB: prp_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+      
+      redis:
+        image: redis:7
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379:6379
+    
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install locust
+      
+      - name: Run performance tests
+        env:
+          DATABASE_URL: postgresql://postgres:testpass@localhost:5432/prp_test
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key
+          JWT_SECRET_KEY: test-jwt-key
+        run: |
+          # Start the application
+          gunicorn prp_app:app --bind 0.0.0.0:8000 --workers 2 &
+          APP_PID=$!
+          
+          # Wait for app to start
+          sleep 10
+          
+          # Run basic load test
+          locust --headless --users 10 --spawn-rate 2 -t 60s --host http://localhost:8000 --html performance-report.html || true
+          
+          # Stop the application
+          kill $APP_PID
+      
+      - name: Upload performance report
+        uses: actions/upload-artifact@v3
+        with:
+          name: performance-report
+          path: performance-report.html
+
+  # Documentation check
+  docs-check:
+    name: Documentation Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check README
+        run: |
+          if [ ! -f "README.md" ]; then
+            echo "::error::README.md is missing"
+            exit 1
+          fi
+          
+          # Check for required sections
+          for section in "Installation" "Configuration" "Usage" "Testing" "Deployment"; do
+            if ! grep -q "## $section" README.md; then
+              echo "::warning::README.md should include $section section"
+            fi
+          done
+      
+      - name: Check API documentation
+        run: |
+          # Check for API documentation
+          if ! grep -q "flask-restx\|flasgger\|swagger" requirements.txt; then
+            echo "::warning::Consider adding API documentation library"
+          fi
+
+  # Dependency check
+  dependency-check:
+    name: Dependency Security Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Check for dependency updates
+        run: |
+          pip install pip-audit
+          pip-audit || echo "::warning::Some dependencies have known vulnerabilities"
+      
+      - name: Check for unused dependencies
+        run: |
+          pip install pipreqs
+          pipreqs . --print > required.txt
+          
+          # Compare with requirements.txt
+          echo "::notice::Review dependencies for unused packages"

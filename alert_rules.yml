@@ -1,0 +1,124 @@
+groups:
+  - name: prp_system_alerts
+    interval: 30s
+    rules:
+      # Application availability
+      - alert: PRPApplicationDown
+        expr: up{job="prp-api"} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: platform
+        annotations:
+          summary: "PRP Application is down"
+          description: "PRP API has been down for more than 2 minutes. Instance: {{ $labels.instance }}"
+
+      # High error rate
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(prp_http_requests_total{status=~"5.."}[5m])) by (job)
+            /
+            sum(rate(prp_http_requests_total[5m])) by (job)
+          ) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "High error rate detected"
+          description: "Error rate is above 5% for the last 5 minutes. Current: {{ $value | humanizePercentage }}"
+
+      # Slow response times
+      - alert: SlowResponseTime
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(prp_http_request_duration_seconds_bucket[5m])) by (le, job)
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Slow API response times"
+          description: "95th percentile response time is above 1 second for 10 minutes. Current: {{ $value }}s"
+
+      # Database connection issues
+      - alert: DatabaseConnectionPoolExhausted
+        expr: pg_stat_database_numbackends{datname="prp_production"} / pg_settings_max_connections > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          team: database
+        annotations:
+          summary: "Database connection pool near exhaustion"
+          description: "Database connections are at {{ $value | humanizePercentage }} of maximum"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: |
+          (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.85
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85% for 10 minutes. Current: {{ $value | humanizePercentage }}"
+
+      # Disk space low
+      - alert: DiskSpaceLow
+        expr: |
+          (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.15
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Low disk space"
+          description: "Less than 15% disk space remaining. Available: {{ $value | humanizePercentage }}"
+
+      # Redis memory usage
+      - alert: RedisMemoryHigh
+        expr: redis_memory_used_bytes / redis_memory_max_bytes > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "Redis memory usage high"
+          description: "Redis memory usage is above 85%. Current: {{ $value | humanizePercentage }}"
+
+      # Certificate expiry
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 7 * 24 * 3600
+        for: 1h
+        labels:
+          severity: warning
+          team: security
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate will expire in {{ $value | humanizeDuration }}"
+
+      # Task queue backlog
+      - alert: HighTaskQueueBacklog
+        expr: celery_queue_length{queue="default"} > 1000
+        for: 10m
+        labels:
+          severity: warning
+          team: platform
+        annotations:
+          summary: "High task queue backlog"
+          description: "Celery queue has {{ $value }} pending tasks"
+
+      # API rate limiting
+      - alert: HighRateLimitRejections
+        expr: |
+          sum(rate(prp_rate_limit_rejected_total[5m])) > 10
+        for: 5m
+        labels:
+          severity: info
+          team: platform
+        annotations:
+          summary: "High rate of API rate limit rejections"
+          description: "{{ $value }} requests per second being rate limited"

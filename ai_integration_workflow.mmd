@@ -1,0 +1,28 @@
+
+sequenceDiagram
+    participant User
+    participant Hub as Integration Hub
+    participant Reg as Component Registry
+    participant Orch as Orchestrator
+    participant Code as Code Generator
+    participant Test as Testing Engine
+    participant Sec as Security Analyzer
+    
+    User->>Hub: Initialize System
+    Hub->>Reg: Register Components
+    Reg->>Code: Register
+    Reg->>Test: Register
+    Reg->>Sec: Register
+    Reg->>Orch: Register
+    
+    User->>Orch: Execute Workflow
+    Orch->>Code: Generate Code Request
+    Code-->>Orch: Generated Code
+    
+    Orch->>Test: Generate Tests Request
+    Test-->>Orch: Test Suite
+    
+    Orch->>Sec: Security Audit Request
+    Sec-->>Orch: Security Report
+    
+    Orch-->>User: Workflow Complete

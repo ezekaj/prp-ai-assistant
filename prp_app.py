@@ -5,7 +5,7 @@ Stateless PRP Application - 12-Factor Compliant
 
 import os
 from flask import Flask, request, jsonify
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from redis import Redis
 from dotenv import load_dotenv
 from logging_config import configure_logging, get_logger
@@ -28,13 +28,21 @@ app = Flask(__name__)
 
 # Configuration from environment
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key'
+    SECRET_KEY = os.environ.get('SECRET_KEY')  # No fallback for security
     DATABASE_URL = os.environ.get('DATABASE_URL')
     REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
     LOG_LEVEL = os.environ.get('LOG_LEVEL', 'INFO')
     ANALYTICS_RETENTION_DAYS = int(os.environ.get('ANALYTICS_RETENTION_DAYS', '90'))
     MAX_PRP_COMPLEXITY = int(os.environ.get('MAX_PRP_COMPLEXITY', '10'))
     DEFAULT_SUCCESS_THRESHOLD = float(os.environ.get('DEFAULT_SUCCESS_THRESHOLD', '0.8'))
+    
+    @classmethod
+    def validate(cls):
+        """Validate required configuration"""
+        if not cls.SECRET_KEY:
+            raise ValueError("SECRET_KEY environment variable is required")
+        if not cls.DATABASE_URL:
+            raise ValueError("DATABASE_URL environment variable is required")
 
 app.config.from_object(Config)
 
@@ -54,8 +62,17 @@ def init_backing_services():
     
     # Test connections
     try:
-        db_engine.execute("SELECT 1")
-        redis_client.ping()
+        # Test database connection - SQLAlchemy 2.0 style
+        with db_engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        
+        # Test Redis connection (may fail in dev)
+        try:
+            redis_client.ping()
+        except:
+            logger.warning("Redis not available - continuing without caching")
+            redis_client = None
+            
         logger.info("backing_services_initialized", database_url=Config.DATABASE_URL, redis_url=Config.REDIS_URL)
     except Exception as e:
         logger.error("backing_services_initialization_failed", error=str(e))
@@ -86,6 +103,24 @@ def after_request(response):
                duration_ms=duration * 1000)
     return response
 
+@app.route('/')
+def home():
+    """Home page with API information"""
+    return jsonify({
+        'service': 'PRP AI Assistant System',
+        'version': '2.0.0',
+        'status': 'running',
+        'environment': os.environ.get('PRP_ENV', 'development'),
+        'endpoints': {
+            'health': '/health',
+            'metrics': '/metrics',
+            'generate_prp': '/api/prp/generate',
+            'analytics': '/api/analytics/dashboard',
+            'analyze_prp': '/api/prp/analyze'
+        },
+        'documentation': 'See README.md for API documentation'
+    })
+
 @app.route('/metrics')
 def metrics():
     """Prometheus metrics endpoint"""
@@ -94,30 +129,44 @@ def metrics():
 @app.route('/health')
 def health_check():
     """Health check endpoint for load balancers"""
+    checks = {}
+    overall_healthy = True
+    
     try:
         # Check database
-        db_engine.execute("SELECT 1")
-        # Check Redis
-        redis_client.ping()
-        
-        health_data = {
-            'status': 'healthy',
-            'timestamp': os.environ.get('DYNO_STARTED_AT'),
-            'version': '2.0.0',
-            'checks': {
-                'database': 'ok',
-                'redis': 'ok'
-            }
-        }
-        logger.info("health_check_successful", **health_data)
-        return jsonify(health_data), 200
+        if db_engine:
+            with db_engine.connect() as conn:
+                conn.execute(text("SELECT 1"))
+            checks['database'] = 'ok'
+        else:
+            checks['database'] = 'not configured'
+            overall_healthy = False
     except Exception as e:
-        error_data = {
-            'status': 'unhealthy',
-            'error': str(e)
-        }
-        logger.error("health_check_failed", **error_data)
-        return jsonify(error_data), 503
+        checks['database'] = f'error: {str(e)}'
+        overall_healthy = False
+    
+    try:
+        # Check Redis
+        if redis_client:
+            redis_client.ping()
+            checks['redis'] = 'ok'
+        else:
+            checks['redis'] = 'not available (dev mode)'
+    except Exception as e:
+        checks['redis'] = f'error: {str(e)}'
+        # Redis failure doesn't make app unhealthy in dev
+    
+    health_data = {
+        'status': 'healthy' if overall_healthy else 'unhealthy',
+        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+        'version': '2.0.0',
+        'environment': os.environ.get('PRP_ENV', 'development'),
+        'checks': checks
+    }
+    
+    status_code = 200 if overall_healthy else 503
+    logger.info("health_check_completed", **health_data)
+    return jsonify(health_data), status_code
 
 @app.route('/api/prp/generate', methods=['POST'])
 def generate_prp():
@@ -168,6 +217,21 @@ def analyze_prp():
     
     return jsonify(result)
 
+# Initialize backing services on module load
+db_engine = None
+redis_client = None
+
+# Initialize services if not in import-only mode
+if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or __name__ == '__main__':
+    try:
+        init_backing_services()
+    except Exception as e:
+        logger.error("Failed to initialize backing services", error=str(e))
+        # For development, continue without Redis if it's not available
+        if 'redis' in str(e).lower():
+            logger.warning("Continuing without Redis - caching disabled")
+            redis_client = None
+
 # Process signal handlers for graceful shutdown
 import signal
 import sys
@@ -176,10 +240,10 @@ def signal_handler(sig, frame):
     """Handle shutdown signals gracefully"""
     logger.info("graceful_shutdown_initiated", signal=sig)
     # Close database connections
-    if 'db_engine' in globals():
+    if 'db_engine' in globals() and db_engine:
         db_engine.dispose()
     # Close Redis connections
-    if 'redis_client' in globals():
+    if 'redis_client' in globals() and redis_client:
         redis_client.close()
     sys.exit(0)
 
@@ -187,6 +251,14 @@ signal.signal(signal.SIGTERM, signal_handler)
 signal.signal(signal.SIGINT, signal_handler)
 
 if __name__ == '__main__':
-    init_backing_services()
+    # Validate configuration before starting
+    try:
+        Config.validate()
+    except ValueError as e:
+        logger.error("configuration_validation_failed", error=str(e))
+        sys.exit(1)
+    
+    if not db_engine:
+        init_backing_services()
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port)

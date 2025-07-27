@@ -1,0 +1,217 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: prp-system
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prp-config
+  namespace: prp-system
+data:
+  PRP_ENV: "production"
+  PORT: "8000"
+  LOG_LEVEL: "INFO"
+  ANALYTICS_RETENTION_DAYS: "90"
+  MAX_PRP_COMPLEXITY: "10"
+  DEFAULT_SUCCESS_THRESHOLD: "0.8"
+  ENABLE_PREDICTIVE_ANALYSIS: "true"
+  ENABLE_SECURITY_SCANNING: "true"
+  ENABLE_PERFORMANCE_MONITORING: "true"
+  CORS_ORIGINS: "https://yourdomain.com"
+  RATE_LIMIT_DEFAULT: "100 per hour"
+  FORCE_HTTPS: "true"
+  SECURITY_HEADERS_ENABLED: "true"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: prp-secrets
+  namespace: prp-system
+type: Opaque
+stringData:
+  SECRET_KEY: "your-32-character-secret-key-here"
+  JWT_SECRET_KEY: "your-32-character-jwt-secret-here"
+  DATABASE_URL: "postgresql://prp_user:password@postgres:5432/prp_production"
+  REDIS_URL: "redis://redis:6379/0"
+  CLAUDE_API_KEY: "your-claude-api-key"
+  GITHUB_TOKEN: "your-github-token"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prp-api
+  namespace: prp-system
+  labels:
+    app: prp-api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: prp-api
+  template:
+    metadata:
+      labels:
+        app: prp-api
+    spec:
+      containers:
+      - name: prp-api
+        image: your-registry/prp-system:latest
+        ports:
+        - containerPort: 8000
+          name: http
+        envFrom:
+        - configMapRef:
+            name: prp-config
+        - secretRef:
+            name: prp-secrets
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 10
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3
+        volumeMounts:
+        - name: app-data
+          mountPath: /app/data
+      volumes:
+      - name: app-data
+        persistentVolumeClaim:
+          claimName: prp-data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prp-api
+  namespace: prp-system
+spec:
+  selector:
+    app: prp-api
+  ports:
+  - port: 8000
+    targetPort: 8000
+    name: http
+  type: ClusterIP
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: prp-api-hpa
+  namespace: prp-system
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: prp-api
+  minReplicas: 3
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+  - type: Pods
+    pods:
+      metric:
+        name: http_requests_per_second
+      target:
+        type: AverageValue
+        averageValue: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+      policies:
+      - type: Percent
+        value: 10
+        periodSeconds: 60
+      - type: Pods
+        value: 2
+        periodSeconds: 60
+      selectPolicy: Min
+    scaleUp:
+      stabilizationWindowSeconds: 60
+      policies:
+      - type: Percent
+        value: 100
+        periodSeconds: 15
+      - type: Pods
+        value: 4
+        periodSeconds: 15
+      selectPolicy: Max
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: prp-data-pvc
+  namespace: prp-system
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 10Gi
+  storageClassName: fast-ssd
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: prp-api-pdb
+  namespace: prp-system
+spec:
+  minAvailable: 2
+  selector:
+    matchLabels:
+      app: prp-api
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: prp-api-ingress
+  namespace: prp-system
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+spec:
+  tls:
+  - hosts:
+    - api.yourdomain.com
+    secretName: prp-api-tls
+  rules:
+  - host: api.yourdomain.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: prp-api
+            port:
+              number: 8000

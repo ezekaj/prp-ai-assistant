@@ -38,7 +38,17 @@
       "Bash(git config:*)",
       "Bash(rm:*)",
       "Bash(git reset:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(touch:*)",
+      "Bash(copy .env.example .env)",
+      "Bash(set POSTGRES_PASSWORD=devpassword123)",
+      "Bash(pip show:*)",
+      "Bash(curl:*)",
+      "WebFetch(domain:github.com)",
+      "Bash(git clone:*)",
+      "WebFetch(domain:api.github.com)",
+      "Bash(mv:*)",
+      "Bash(git fetch:*)"
     ],
     "deny": []
   }
