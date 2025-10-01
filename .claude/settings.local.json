@@ -48,7 +48,10 @@
       "Bash(git clone:*)",
       "WebFetch(domain:api.github.com)",
       "Bash(mv:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "WebFetch(domain:arxiv.org)",
+      "Bash(diff:*)",
+      "Bash(set PORT=8080)"
     ],
     "deny": []
   }

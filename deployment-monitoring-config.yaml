@@ -1,0 +1,223 @@
+# Deployment Monitoring Configuration
+# Comprehensive monitoring setup for progressive deployments
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    environment: 'production'
+    cluster: 'prp-cluster'
+
+# Deployment-specific alerts
+rule_files:
+  - 'deployment-alerts.yaml'
+  - 'canary-alerts.yaml'
+  - 'rollback-alerts.yaml'
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - 'alertmanager:9093'
+
+scrape_configs:
+  # Application metrics
+  - job_name: 'prp-api'
+    kubernetes_sd_configs:
+      - role: pod
+        namespaces:
+          names:
+            - prp-system
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_label_app]
+        target_label: app
+      - source_labels: [__meta_kubernetes_pod_label_version]
+        target_label: version
+      - source_labels: [__meta_kubernetes_pod_label_deployment]
+        target_label: deployment_type
+      - source_labels: [__meta_kubernetes_pod_name]
+        target_label: pod
+      - source_labels: [__meta_kubernetes_namespace]
+        target_label: namespace
+
+  # Kubernetes metrics
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_container_port_name]
+        action: keep
+        regex: metrics
+
+  # Node exporter for system metrics
+  - job_name: 'node-exporter'
+    kubernetes_sd_configs:
+      - role: node
+    relabel_configs:
+      - source_labels: [__address__]
+        regex: '(.*):10250'
+        replacement: '${1}:9100'
+        target_label: __address__
+
+# Deployment-specific recording rules
+recording_rules:
+  - name: deployment_metrics
+    interval: 30s
+    rules:
+      # Deployment success rate
+      - record: deployment:success_rate:5m
+        expr: |
+          sum(rate(deployment_completed_total{status="success"}[5m])) 
+          / 
+          sum(rate(deployment_completed_total[5m]))
+
+      # Canary vs Stable error rate
+      - record: deployment:canary_error_rate_ratio:5m
+        expr: |
+          (
+            sum(rate(http_requests_total{status=~"5..",deployment="canary"}[5m]))
+            /
+            sum(rate(http_requests_total{deployment="canary"}[5m]))
+          )
+          /
+          (
+            sum(rate(http_requests_total{status=~"5..",deployment="stable"}[5m]))
+            /
+            sum(rate(http_requests_total{deployment="stable"}[5m]))
+          )
+
+      # Deployment duration by stage
+      - record: deployment:stage_duration:5m
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(deployment_stage_duration_seconds_bucket[5m])) by (stage, le)
+          )
+
+      # Traffic distribution
+      - record: deployment:traffic_percentage:1m
+        expr: |
+          sum(rate(http_requests_total[1m])) by (deployment) 
+          / 
+          ignoring(deployment) group_left 
+          sum(rate(http_requests_total[1m]))
+
+# Grafana dashboards configuration
+dashboards:
+  - name: "Deployment Overview"
+    uid: "deployment-overview"
+    panels:
+      - title: "Active Deployments"
+        type: "table"
+        targets:
+          - expr: 'deployment_info'
+            format: 'table'
+      
+      - title: "Deployment Success Rate"
+        type: "graph"
+        targets:
+          - expr: 'deployment:success_rate:5m'
+            legendFormat: 'Success Rate'
+      
+      - title: "Canary vs Stable Performance"
+        type: "graph"
+        targets:
+          - expr: 'histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{deployment="canary"}[5m])) by (le))'
+            legendFormat: 'Canary P95'
+          - expr: 'histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{deployment="stable"}[5m])) by (le))'
+            legendFormat: 'Stable P95'
+      
+      - title: "Traffic Distribution"
+        type: "piechart"
+        targets:
+          - expr: 'deployment:traffic_percentage:1m'
+            legendFormat: '{{deployment}}'
+      
+      - title: "Rollback Events"
+        type: "table"
+        targets:
+          - expr: 'increase(deployment_rollback_total[24h])'
+            format: 'table'
+
+  - name: "Canary Analysis"
+    uid: "canary-analysis"
+    panels:
+      - title: "Error Rate Comparison"
+        type: "graph"
+        targets:
+          - expr: 'sum(rate(http_requests_total{status=~"5..",deployment="canary"}[5m])) / sum(rate(http_requests_total{deployment="canary"}[5m]))'
+            legendFormat: 'Canary Error Rate'
+          - expr: 'sum(rate(http_requests_total{status=~"5..",deployment="stable"}[5m])) / sum(rate(http_requests_total{deployment="stable"}[5m]))'
+            legendFormat: 'Stable Error Rate'
+      
+      - title: "Latency Distribution"
+        type: "heatmap"
+        targets:
+          - expr: 'sum(rate(http_request_duration_seconds_bucket{deployment="canary"}[5m])) by (le)'
+            format: 'heatmap'
+      
+      - title: "Resource Usage"
+        type: "graph"
+        targets:
+          - expr: 'avg(container_memory_usage_bytes{pod=~".*canary.*"}) by (pod)'
+            legendFormat: 'Memory - {{pod}}'
+          - expr: 'avg(rate(container_cpu_usage_seconds_total{pod=~".*canary.*"}[5m])) by (pod)'
+            legendFormat: 'CPU - {{pod}}'
+
+# SLO configuration for deployments
+slos:
+  - name: "deployment_success_rate"
+    description: "Deployments should succeed 95% of the time"
+    objective: 95
+    query: 'deployment:success_rate:5m * 100'
+    
+  - name: "deployment_impact"
+    description: "Error rate should not increase by more than 1% during deployment"
+    objective: 99
+    query: '100 - (max(rate(http_requests_total{status=~"5.."}[5m])) * 100)'
+    
+  - name: "rollback_time"
+    description: "Rollbacks should complete within 5 minutes"
+    objective: 95
+    query: 'histogram_quantile(0.95, deployment_rollback_duration_seconds_bucket) < 300'
+
+# Notification channels
+notifications:
+  - name: "deployment-alerts"
+    type: "slack"
+    config:
+      channel: "#deployments"
+      username: "Deployment Bot"
+      icon_emoji: ":rocket:"
+    
+  - name: "critical-alerts"
+    type: "pagerduty"
+    config:
+      service_key: "${PAGERDUTY_SERVICE_KEY}"
+      
+  - name: "deployment-reports"
+    type: "email"
+    config:
+      to: ["platform-team@company.com"]
+      subject: "Deployment Report - {{ .GroupLabels.deployment_id }}"
+
+# Webhook receivers for automation
+webhooks:
+  - name: "auto-rollback"
+    url: "http://deployment-controller:8080/webhook/rollback"
+    events:
+      - "deployment.health.critical"
+      - "deployment.error_rate.high"
+    
+  - name: "deployment-analytics"
+    url: "http://analytics-service:8080/webhook/deployment"
+    events:
+      - "deployment.started"
+      - "deployment.completed"
+      - "deployment.failed"
+      - "deployment.rolled_back"

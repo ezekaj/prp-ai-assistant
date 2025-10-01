@@ -241,17 +241,61 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+      
       - name: Deploy to staging
         run: |
           echo "Deploying to staging environment..."
-          # Add your staging deployment commands here
-          # Example: kubectl apply -f k8s/staging/
+          
+          # Configure kubectl (example for different cloud providers)
+          # For AWS EKS:
+          # aws eks update-kubeconfig --name ${{ secrets.STAGING_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+          
+          # For GKE:
+          # gcloud container clusters get-credentials ${{ secrets.STAGING_CLUSTER_NAME }} --zone ${{ secrets.GCP_ZONE }}
+          
+          # For Azure AKS:
+          # az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.STAGING_CLUSTER_NAME }}
+          
+          # Update image in deployment
+          kubectl set image deployment/prp-assistant prp-assistant=${{ secrets.DOCKER_USERNAME }}/prp-ai-assistant:${{ github.sha }} -n staging
+          
+          # Apply any configuration changes
+          kubectl apply -f k8s/staging/ -n staging
+          
+          # Wait for rollout to complete
+          kubectl rollout status deployment/prp-assistant -n staging --timeout=300s
       
       - name: Run smoke tests
         run: |
           echo "Running smoke tests against staging..."
-          # Add smoke test commands here
-          # curl -f https://staging.yourdomain.com/health
+          
+          # Get the staging URL (could be from ingress or service)
+          STAGING_URL="${{ secrets.STAGING_URL }}"
+          
+          # Health check
+          echo "Checking health endpoint..."
+          curl -f -X GET "$STAGING_URL/health" || exit 1
+          
+          # Check metrics endpoint
+          echo "Checking metrics endpoint..."
+          curl -f -X GET "$STAGING_URL/metrics" || exit 1
+          
+          # Test authentication
+          echo "Testing authentication..."
+          RESPONSE=$(curl -s -X POST "$STAGING_URL/auth/login" \
+            -H "Content-Type: application/json" \
+            -d '{"username":"test_user","password":"test_pass"}')
+          
+          if [[ $RESPONSE == *"error"* ]]; then
+            echo "✅ Auth endpoint responding correctly"
+          else
+            echo "❌ Auth endpoint not working as expected"
+            exit 1
+          fi
 
   # Deploy to Production
   deploy-production:
@@ -263,17 +307,68 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
+      - name: Configure kubectl
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'latest'
+      
       - name: Deploy to production
         run: |
-          echo "Deploying to production environment..."
-          # Add your production deployment commands here
-          # Example: kubectl apply -f k8s/production/
+          echo "🚀 Starting production deployment..."
+          
+          # Configure kubectl for production cluster
+          # Choose based on your cloud provider:
+          # aws eks update-kubeconfig --name ${{ secrets.PROD_CLUSTER_NAME }} --region ${{ secrets.AWS_REGION }}
+          # gcloud container clusters get-credentials ${{ secrets.PROD_CLUSTER_NAME }} --zone ${{ secrets.GCP_ZONE }}
+          # az aks get-credentials --resource-group ${{ secrets.RESOURCE_GROUP }} --name ${{ secrets.PROD_CLUSTER_NAME }}
+          
+          # Create backup of current deployment
+          kubectl get deployment prp-assistant -n production -o yaml > deployment-backup.yaml
+          
+          # Update deployment with new image
+          kubectl set image deployment/prp-assistant prp-assistant=${{ secrets.DOCKER_USERNAME }}/prp-ai-assistant:${{ github.sha }} -n production
+          
+          # Apply configuration updates
+          kubectl apply -f k8s/production/ -n production
+          
+          # Wait for rollout with extended timeout
+          kubectl rollout status deployment/prp-assistant -n production --timeout=600s
+          
+          # Verify all pods are running
+          kubectl wait --for=condition=ready pod -l app=prp-assistant -n production --timeout=300s
       
       - name: Run production health checks
         run: |
           echo "Running production health checks..."
-          # Add production health check commands here
-          # curl -f https://api.yourdomain.com/health
+          
+          PROD_URL="${{ secrets.PRODUCTION_URL }}"
+          
+          # Health check with retries
+          for i in {1..5}; do
+            if curl -f -X GET "$PROD_URL/health"; then
+              echo "✅ Health check passed"
+              break
+            else
+              echo "⏳ Health check attempt $i failed, retrying..."
+              sleep 10
+            fi
+          done
+          
+          # Verify database connectivity
+          HEALTH_RESPONSE=$(curl -s "$PROD_URL/health")
+          if [[ $HEALTH_RESPONSE == *"\"database\":\"ok\""* ]]; then
+            echo "✅ Database connection verified"
+          else
+            echo "❌ Database connection failed"
+            exit 1
+          fi
+          
+          # Check Redis connectivity
+          if [[ $HEALTH_RESPONSE == *"\"redis\":\"ok\""* ]]; then
+            echo "✅ Redis connection verified"
+          else
+            echo "⚠️  Redis connection failed (non-critical)"
+          fi
       
       - name: Notify deployment success
         run: |

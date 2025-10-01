@@ -4,14 +4,19 @@ Stateless PRP Application - 12-Factor Compliant
 """
 
 import os
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, Blueprint
+from flask_cors import CORS
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 from redis import Redis
 from dotenv import load_dotenv
 from logging_config import configure_logging, get_logger
 from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_LATEST
 import time
 import uuid
+
+# Import authentication
+from auth import init_auth, register_auth_routes, jwt_required, role_required, User, Base
 
 # Load environment variables
 load_dotenv()
@@ -25,6 +30,12 @@ REQUEST_COUNT = Counter('http_requests_total', 'Total HTTP requests', ['method',
 REQUEST_DURATION = Histogram('http_request_duration_seconds', 'HTTP request duration')
 
 app = Flask(__name__)
+
+# Enable CORS for frontend integration
+CORS(app, origins=os.environ.get('ALLOWED_ORIGINS', '*').split(','))
+
+# Initialize JWT authentication
+jwt = init_auth(app)
 
 # Configuration from environment
 class Config:
@@ -46,37 +57,8 @@ class Config:
 
 app.config.from_object(Config)
 
-# Backing services initialization
-def init_backing_services():
-    """Initialize all backing services as attached resources"""
-    global db_engine, redis_client
-    
-    # Database connection
-    if Config.DATABASE_URL:
-        db_engine = create_engine(Config.DATABASE_URL)
-    else:
-        raise ValueError("DATABASE_URL environment variable is required")
-    
-    # Redis connection
-    redis_client = Redis.from_url(Config.REDIS_URL)
-    
-    # Test connections
-    try:
-        # Test database connection - SQLAlchemy 2.0 style
-        with db_engine.connect() as conn:
-            conn.execute(text("SELECT 1"))
-        
-        # Test Redis connection (may fail in dev)
-        try:
-            redis_client.ping()
-        except:
-            logger.warning("Redis not available - continuing without caching")
-            redis_client = None
-            
-        logger.info("backing_services_initialized", database_url=Config.DATABASE_URL, redis_url=Config.REDIS_URL)
-    except Exception as e:
-        logger.error("backing_services_initialization_failed", error=str(e))
-        raise
+# Import backing services manager
+from backing_services import init_backing_services as init_services, get_backing_services
 
 # Request logging middleware
 from flask import g
@@ -103,23 +85,246 @@ def after_request(response):
                duration_ms=duration * 1000)
     return response
 
-@app.route('/')
-def home():
-    """Home page with API information"""
+@app.route('/api')
+def api_info():
+    """API information in JSON format"""
     return jsonify({
         'service': 'PRP AI Assistant System',
         'version': '2.0.0',
         'status': 'running',
         'environment': os.environ.get('PRP_ENV', 'development'),
+        'api_versions': {
+            'v1': '/api/v1/',
+            'v2': '/api/v2/' 
+        },
         'endpoints': {
             'health': '/health',
             'metrics': '/metrics',
-            'generate_prp': '/api/prp/generate',
-            'analytics': '/api/analytics/dashboard',
-            'analyze_prp': '/api/prp/analyze'
+            'auth': '/auth/*',
+            'api_v1': {
+                'generate_prp': '/api/v1/prp/generate',
+                'analytics': '/api/v1/analytics/dashboard',
+                'analyze_prp': '/api/v1/prp/analyze'
+            },
+            'api_v2': {
+                'generate_prp': '/api/v2/prp/generate',
+                'analytics': '/api/v2/analytics/dashboard',
+                'analyze_prp': '/api/v2/prp/analyze',
+                'multi_agent': '/api/v2/prp/multi-agent'
+            }
         },
         'documentation': 'See README.md for API documentation'
     })
+
+@app.route('/')
+def home():
+    """Home page with beautiful HTML interface"""
+    return f"""
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>PRP AI Assistant System</title>
+        <style>
+            body {{ 
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                max-width: 1200px; 
+                margin: 0 auto; 
+                padding: 20px;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                min-height: 100vh;
+            }}
+            .container {{ 
+                background: rgba(255,255,255,0.1); 
+                padding: 30px; 
+                border-radius: 15px;
+                backdrop-filter: blur(10px);
+                box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            }}
+            h1 {{ 
+                color: #ffffff; 
+                text-align: center;
+                font-size: 2.5em;
+                margin-bottom: 30px;
+                text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            }}
+            .status {{ 
+                background: #4CAF50; 
+                color: white; 
+                padding: 10px 20px; 
+                border-radius: 25px; 
+                display: inline-block;
+                margin: 10px 0;
+                font-weight: bold;
+            }}
+            .endpoint {{ 
+                background: rgba(255,255,255,0.2); 
+                margin: 10px 0; 
+                padding: 15px; 
+                border-radius: 8px;
+                border-left: 4px solid #FFD700;
+            }}
+            .endpoint h3 {{ 
+                margin-top: 0; 
+                color: #FFD700;
+            }}
+            .endpoint-url {{ 
+                font-family: 'Courier New', monospace; 
+                background: rgba(0,0,0,0.3); 
+                padding: 8px; 
+                border-radius: 4px;
+                margin: 5px 0;
+                word-break: break-all;
+            }}
+            .feature {{ 
+                background: rgba(255,255,255,0.1); 
+                padding: 15px; 
+                margin: 10px 0; 
+                border-radius: 8px;
+                border-left: 4px solid #00E676;
+            }}
+            .grid {{ 
+                display: grid; 
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); 
+                gap: 20px; 
+                margin: 20px 0;
+            }}
+            a {{ 
+                color: #FFD700; 
+                text-decoration: none;
+            }}
+            a:hover {{ 
+                text-decoration: underline;
+            }}
+            .button {{ 
+                background: #FF6B6B; 
+                color: white; 
+                padding: 12px 24px; 
+                border: none; 
+                border-radius: 6px; 
+                cursor: pointer; 
+                text-decoration: none; 
+                display: inline-block;
+                margin: 5px;
+                font-weight: bold;
+                transition: background 0.3s;
+            }}
+            .button:hover {{ 
+                background: #FF5252;
+                text-decoration: none;
+            }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>🚀 PRP AI Assistant System</h1>
+            
+            <div class="status">
+                ✅ System Status: ACTIVE & RUNNING - Version 2.0.0
+            </div>
+            <div class="status" style="background: #2196F3;">
+                🌍 Environment: {os.environ.get('PRP_ENV', 'development')}
+            </div>
+            
+            <h2>🎯 Quick Actions</h2>
+            <div>
+                <a href="/health" class="button">🏥 Health Check</a>
+                <a href="/metrics" class="button">📊 Metrics</a>
+                <a href="/api/v2/" class="button">🔧 API v2</a>
+            </div>
+            
+            <div class="grid">
+                <div class="endpoint">
+                    <h3>🔐 Authentication</h3>
+                    <div class="endpoint-url">POST /auth/register</div>
+                    <div class="endpoint-url">POST /auth/login</div>
+                    <div class="endpoint-url">POST /auth/refresh</div>
+                    <p>JWT-based authentication with role-based access control</p>
+                </div>
+                
+                <div class="endpoint">
+                    <h3>🤖 Multi-Agent System</h3>
+                    <div class="endpoint-url">POST /api/v2/prp/multi-agent</div>
+                    <div class="endpoint-url">GET /api/v2/agents/</div>
+                    <div class="endpoint-url">GET /api/v2/tasks/{{id}}</div>
+                    <p>Coordinate multiple AI agents for complex tasks</p>
+                </div>
+                
+                <div class="endpoint">
+                    <h3>📊 Analytics & PRP</h3>
+                    <div class="endpoint-url">POST /api/v2/prp/generate</div>
+                    <div class="endpoint-url">POST /api/v2/prp/analyze</div>
+                    <div class="endpoint-url">GET /api/v2/analytics/dashboard</div>
+                    <p>Generate and analyze Problem-Resolution Plans</p>
+                </div>
+                
+                <div class="endpoint">
+                    <h3>⚙️ System Monitoring</h3>
+                    <div class="endpoint-url">GET /health</div>
+                    <div class="endpoint-url">GET /metrics</div>
+                    <p>Health checks, Prometheus metrics, and system status</p>
+                </div>
+            </div>
+            
+            <h2>✨ System Features</h2>
+            <div class="grid">
+                <div class="feature">
+                    <h3>🔒 Enterprise Security</h3>
+                    <p>JWT authentication, password hashing, role-based access control, CORS protection</p>
+                </div>
+                
+                <div class="feature">
+                    <h3>🚀 High Performance</h3>
+                    <p>Database connection pooling, Redis caching, structured logging, Prometheus metrics</p>
+                </div>
+                
+                <div class="feature">
+                    <h3>🔄 API Versioning</h3>
+                    <p>v1 (backward compatible) and v2 (enhanced features) with automatic routing</p>
+                </div>
+                
+                <div class="feature">
+                    <h3>🧪 Production Ready</h3>
+                    <p>Comprehensive tests, Kubernetes configs, CI/CD pipeline, health monitoring</p>
+                </div>
+            </div>
+            
+            <h2>📖 Getting Started</h2>
+            <div class="endpoint">
+                <h3>1. Register a User</h3>
+                <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; overflow-x: auto;">
+curl -X POST http://127.0.0.1:8000/auth/register \\
+  -H "Content-Type: application/json" \\
+  -d '{{"username": "admin", "email": "admin@example.com", "password": "securepass123", "role": "admin"}}'</pre>
+            </div>
+            
+            <div class="endpoint">
+                <h3>2. Login & Get Token</h3>
+                <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; overflow-x: auto;">
+curl -X POST http://127.0.0.1:8000/auth/login \\
+  -H "Content-Type: application/json" \\
+  -d '{{"username": "admin", "password": "securepass123"}}'</pre>
+            </div>
+            
+            <div class="endpoint">
+                <h3>3. Use Multi-Agent System</h3>
+                <pre style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; overflow-x: auto;">
+curl -X POST http://127.0.0.1:8000/api/v2/prp/multi-agent \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{{"task_description": "Build secure API", "agents": ["code", "test", "security"]}}'</pre>
+            </div>
+            
+            <footer style="text-align: center; margin-top: 40px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
+                <p>🎉 <strong>PRP AI Assistant System v2.0.0</strong> - Production Ready with Multi-Agent Coordination</p>
+                <p>Built with Flask, SQLAlchemy, JWT, Redis, and ❤️</p>
+            </footer>
+        </div>
+    </body>
+    </html>
+    """
 
 @app.route('/metrics')
 def metrics():
@@ -129,108 +334,106 @@ def metrics():
 @app.route('/health')
 def health_check():
     """Health check endpoint for load balancers"""
-    checks = {}
-    overall_healthy = True
-    
     try:
-        # Check database
-        if db_engine:
-            with db_engine.connect() as conn:
-                conn.execute(text("SELECT 1"))
-            checks['database'] = 'ok'
-        else:
-            checks['database'] = 'not configured'
-            overall_healthy = False
+        services = get_backing_services()
+        health = services.health_check()
+        
+        overall_healthy = (
+            health['database'] == 'healthy' and 
+            (health['redis'] == 'healthy' or health['redis'] == 'not_configured')
+        )
+        
+        health_data = {
+            'status': 'healthy' if overall_healthy else 'unhealthy',
+            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
+            'version': '2.0.0',
+            'environment': os.environ.get('PRP_ENV', 'development'),
+            'checks': {
+                'database': health['database'],
+                'redis': health['redis']
+            },
+            'details': health.get('details', {})
+        }
+        
+        status_code = 200 if overall_healthy else 503
+        logger.info("health_check_completed", **health_data)
+        return jsonify(health_data), status_code
+        
     except Exception as e:
-        checks['database'] = f'error: {str(e)}'
-        overall_healthy = False
-    
-    try:
-        # Check Redis
-        if redis_client:
-            redis_client.ping()
-            checks['redis'] = 'ok'
-        else:
-            checks['redis'] = 'not available (dev mode)'
-    except Exception as e:
-        checks['redis'] = f'error: {str(e)}'
-        # Redis failure doesn't make app unhealthy in dev
-    
-    health_data = {
-        'status': 'healthy' if overall_healthy else 'unhealthy',
-        'timestamp': time.strftime('%Y-%m-%d %H:%M:%S'),
-        'version': '2.0.0',
-        'environment': os.environ.get('PRP_ENV', 'development'),
-        'checks': checks
-    }
-    
-    status_code = 200 if overall_healthy else 503
-    logger.info("health_check_completed", **health_data)
-    return jsonify(health_data), status_code
+        logger.error(f"Health check failed: {e}")
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': time.strftime('%Y-%m-%d %H:%M:%S')
+        }), 503
 
+# Legacy endpoints - redirect to versioned API
 @app.route('/api/prp/generate', methods=['POST'])
-def generate_prp():
-    """Stateless PRP generation endpoint"""
-    data = request.get_json()
-    
-    # Validate input
-    if not data or not data.get('feature_name'):
-        return jsonify({'error': 'feature_name is required'}), 400
-    
-    # Import here to avoid circular imports
-    from PRPs.scripts.prp_generator_stateless import StatelessPRPGenerator
-    
-    generator = StatelessPRPGenerator(db_engine, redis_client)
-    result = generator.generate_prp(
-        feature_name=data['feature_name'],
-        requirements=data.get('requirements', ''),
-        complexity=data.get('complexity', 5)
-    )
-    
-    return jsonify(result)
+def legacy_generate_prp():
+    """Legacy endpoint - redirects to v1"""
+    return jsonify({
+        'error': 'This endpoint has been deprecated',
+        'message': 'Please use /api/v1/prp/generate instead',
+        'documentation': '/api/v1/'
+    }), 301
 
 @app.route('/api/analytics/dashboard', methods=['GET'])
-def get_dashboard():
-    """Stateless analytics dashboard"""
-    from PRPs.scripts.prp_analytics_stateless import StatelessPRPAnalytics
-    
-    analytics = StatelessPRPAnalytics(db_engine, redis_client)
-    dashboard_data = analytics.get_dashboard_data()
-    
-    return jsonify(dashboard_data)
+def legacy_dashboard():
+    """Legacy endpoint - redirects to v1"""
+    return jsonify({
+        'error': 'This endpoint has been deprecated',
+        'message': 'Please use /api/v1/analytics/dashboard instead',
+        'documentation': '/api/v1/'
+    }), 301
 
 @app.route('/api/prp/analyze', methods=['POST'])
-def analyze_prp():
-    """Stateless PRP analysis endpoint"""
-    data = request.get_json()
-    
-    if not data or not data.get('prp_id'):
-        return jsonify({'error': 'prp_id is required'}), 400
-    
-    from PRPs.scripts.prp_analytics_stateless import StatelessPRPAnalytics
-    
-    analytics = StatelessPRPAnalytics(db_engine, redis_client)
-    result = analytics.analyze_prp_performance(
-        prp_id=data['prp_id'],
-        success_metrics=data.get('success_metrics', {})
-    )
-    
-    return jsonify(result)
+def legacy_analyze():
+    """Legacy endpoint - redirects to v1"""
+    return jsonify({
+        'error': 'This endpoint has been deprecated',
+        'message': 'Please use /api/v1/prp/analyze instead',
+        'documentation': '/api/v1/'
+    }), 301
 
-# Initialize backing services on module load
-db_engine = None
-redis_client = None
+# Import API blueprints
+from api_v1 import api_v1
+from api_v2 import api_v2
+
+# Register blueprints
+app.register_blueprint(api_v1)
+app.register_blueprint(api_v2)
 
 # Initialize services if not in import-only mode
 if os.environ.get('WERKZEUG_RUN_MAIN') == 'true' or __name__ == '__main__':
     try:
-        init_backing_services()
+        # Initialize backing services with config
+        services_config = {
+            'DATABASE_URL': Config.DATABASE_URL,
+            'REDIS_URL': Config.REDIS_URL,
+            'DB_POOL_SIZE': 20,
+            'DB_MAX_OVERFLOW': 40,
+            'REDIS_MAX_CONNECTIONS': 50,
+            'REDIS_TIMEOUT': 5
+        }
+        
+        services = init_services(services_config)
+        services.init_flask_app(app)
+        
+        # Store backing services reference for blueprints
+        app.config['backing_services'] = services
+        app.config['db_engine'] = services.db_engine
+        app.config['redis_client'] = services.redis_client
+        
+        # Create auth tables
+        Base.metadata.create_all(services.db_engine)
+        
+        # Register authentication routes with a session
+        with services.db_session_scope() as session:
+            register_auth_routes(app, session)
+            
     except Exception as e:
         logger.error("Failed to initialize backing services", error=str(e))
-        # For development, continue without Redis if it's not available
-        if 'redis' in str(e).lower():
-            logger.warning("Continuing without Redis - caching disabled")
-            redis_client = None
+        raise
 
 # Process signal handlers for graceful shutdown
 import signal
@@ -239,12 +442,15 @@ import sys
 def signal_handler(sig, frame):
     """Handle shutdown signals gracefully"""
     logger.info("graceful_shutdown_initiated", signal=sig)
-    # Close database connections
-    if 'db_engine' in globals() and db_engine:
-        db_engine.dispose()
-    # Close Redis connections
-    if 'redis_client' in globals() and redis_client:
-        redis_client.close()
+    
+    # Cleanup backing services
+    try:
+        from backing_services import cleanup_backing_services
+        cleanup_backing_services()
+        logger.info("Backing services cleaned up successfully")
+    except Exception as e:
+        logger.error(f"Error during cleanup: {e}")
+    
     sys.exit(0)
 
 signal.signal(signal.SIGTERM, signal_handler)
@@ -258,7 +464,22 @@ if __name__ == '__main__':
         logger.error("configuration_validation_failed", error=str(e))
         sys.exit(1)
     
-    if not db_engine:
-        init_backing_services()
+    # Ensure services are initialized
+    try:
+        get_backing_services()
+    except RuntimeError:
+        # Services not initialized yet
+        services_config = {
+            'DATABASE_URL': Config.DATABASE_URL,
+            'REDIS_URL': Config.REDIS_URL,
+            'DB_POOL_SIZE': 20,
+            'DB_MAX_OVERFLOW': 40,
+            'REDIS_MAX_CONNECTIONS': 50,
+            'REDIS_TIMEOUT': 5
+        }
+        services = init_services(services_config)
+        services.init_flask_app(app)
+        app.config['backing_services'] = services
+    
     port = int(os.environ.get('PORT', 8000))
     app.run(host='0.0.0.0', port=port)

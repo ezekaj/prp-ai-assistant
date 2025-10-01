@@ -1,0 +1,121 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prp-assistant
+  namespace: staging
+  labels:
+    app: prp-assistant
+    environment: staging
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: prp-assistant
+      environment: staging
+  template:
+    metadata:
+      labels:
+        app: prp-assistant
+        environment: staging
+    spec:
+      containers:
+      - name: prp-assistant
+        image: prp-ai-assistant:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: PRP_ENV
+          value: "staging"
+        - name: PORT
+          value: "8000"
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: prp-secrets
+              key: secret-key
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: prp-secrets
+              key: jwt-secret-key
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: prp-secrets
+              key: database-url
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: prp-config
+              key: redis-url
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prp-assistant-service
+  namespace: staging
+spec:
+  selector:
+    app: prp-assistant
+    environment: staging
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8000
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prp-config
+  namespace: staging
+data:
+  redis-url: "redis://redis-service:6379/0"
+  log-level: "INFO"
+  analytics-retention-days: "90"
+  max-prp-complexity: "10"
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: prp-assistant-hpa
+  namespace: staging
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: prp-assistant
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
