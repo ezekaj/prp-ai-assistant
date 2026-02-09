@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRP-AI Assistant — Enterprise-Grade Autonomous AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwindcss.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        inter: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#334155',
+                        accent: '#3B82F6',
+                        surface: '#0B0F19',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: #0B0F19;
+            color: #e2e8f0;
+        }
+
+        .gradient-hero {
+            background: radial-gradient(ellipse at 50% 0%, rgba(59,130,246,0.15) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 50%, rgba(51,65,85,0.1) 0%, transparent 50%),
+                        #0B0F19;
+        }
+
+        .gradient-blue {
+            background: linear-gradient(135deg, #3B82F6, #60A5FA, #93C5FD);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .glass {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(12px);
+        }
+
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            border-color: rgba(59, 130, 246, 0.3);
+            box-shadow: 0 8px 32px rgba(59, 130, 246, 0.1);
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .pipeline-arrow {
+            position: relative;
+        }
+
+        .pipeline-arrow::after {
+            content: '';
+            position: absolute;
+            right: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 8px solid #3B82F6;
+            border-top: 6px solid transparent;
+            border-bottom: 6px solid transparent;
+        }
+
+        .badge {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, rgba(59,130,246,0.05), rgba(51,65,85,0.1));
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+
+        .flow-box {
+            background: rgba(59, 130, 246, 0.08);
+            border: 1px solid rgba(59, 130, 246, 0.25);
+        }
+
+        .flow-connector {
+            width: 40px;
+            height: 2px;
+            background: linear-gradient(90deg, #3B82F6, #60A5FA);
+            position: relative;
+        }
+
+        .flow-connector::after {
+            content: '';
+            position: absolute;
+            right: -1px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 6px solid #60A5FA;
+            border-top: 4px solid transparent;
+            border-bottom: 4px solid transparent;
+        }
+
+        .tech-pill {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.2s ease;
+        }
+
+        .tech-pill:hover {
+            border-color: rgba(59, 130, 246, 0.3);
+            background: rgba(59, 130, 246, 0.06);
+        }
+    </style>
+</head>
+<body class="min-h-screen antialiased">
+
+    <!-- Hero -->
+    <section class="gradient-hero min-h-screen flex items-center justify-center relative overflow-hidden">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-primary/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="max-w-5xl mx-auto px-6 text-center relative z-10">
+            <div class="fade-in">
+                <div class="flex items-center justify-center gap-3 mb-8">
+                    <div class="w-10 h-10 rounded-lg bg-accent/20 border border-accent/30 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <span class="text-sm font-medium text-slate-400 tracking-widest uppercase">PRP-AI Assistant</span>
+                </div>
+
+                <h1 class="text-5xl md:text-7xl font-bold tracking-tight mb-6">
+                    <span class="gradient-blue">Enterprise-Grade</span><br>
+                    <span class="text-white">Autonomous AI</span>
+                </h1>
+
+                <p class="text-lg md:text-xl text-slate-400 max-w-2xl mx-auto mb-8 leading-relaxed">
+                    Self-Spawning Agents for Complex Tasks
+                </p>
+
+                <p class="text-sm md:text-base text-slate-500 max-w-3xl mx-auto mb-10 leading-relaxed">
+                    An enterprise-grade autonomous AI assistant system implementing full 12-factor application principles
+                    with sophisticated multi-agent coordination. Designed for complete autonomy in handling complex
+                    development tasks without manual intervention.
+                </p>
+
+                <!-- Metric Badges -->
+                <div class="flex flex-wrap items-center justify-center gap-3 mb-12">
+                    <span class="badge px-4 py-2 rounded-full text-sm font-medium text-accent">95%+ Success Rate</span>
+                    <span class="badge px-4 py-2 rounded-full text-sm font-medium text-accent">6 Agent Types</span>
+                    <span class="badge px-4 py-2 rounded-full text-sm font-medium text-accent">12-Factor Compliant</span>
+                </div>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-wrap items-center justify-center gap-4">
+                    <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank"
+                       class="inline-flex items-center gap-2 px-6 py-3 bg-accent hover:bg-blue-600 text-white font-semibold rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </a>
+                    <a href="https://zedigital.tech" target="_blank"
+                       class="inline-flex items-center gap-2 px-6 py-3 glass text-slate-300 hover:text-white font-semibold rounded-lg transition-colors">
+                        Portfolio
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <svg class="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
+            </svg>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Core Capabilities</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Six pillars of autonomous intelligence powering seamless development workflows.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- Feature 1 -->
+                <div class="glass rounded-xl p-6 card-hover fade-in">
+                    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">100% Autonomous</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Self-spawning specialized agents for any task. Zero configuration needed, works out of the box.</p>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="glass rounded-xl p-6 card-hover fade-in">
+                    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">6 Specialized Agents</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">CodeAgent, TestAgent, SecurityAgent, DeployAgent, AnalysisAgent, DocsAgent each handling their domain.</p>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="glass rounded-xl p-6 card-hover fade-in">
+                    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Parallel Execution</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Handles up to 10 concurrent operations with automatic task distribution and load balancing.</p>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="glass rounded-xl p-6 card-hover fade-in">
+                    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Self-Healing Recovery</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Automatic error recovery with smart retries, exponential backoff, and circuit breakers.</p>
+                </div>
+
+                <!-- Feature 5 -->
+                <div class="glass rounded-xl p-6 card-hover fade-in">
+                    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">Predictive Intelligence</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Anticipates needs, loads resources preemptively, adapts within 5-10 interactions.</p>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="glass rounded-xl p-6 card-hover fade-in">
+                    <div class="w-10 h-10 rounded-lg bg-accent/10 flex items-center justify-center mb-4">
+                        <svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"/>
+                        </svg>
+                    </div>
+                    <h3 class="text-lg font-semibold text-white mb-2">12-Factor Compliant</h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">Full adherence to twelve-factor app methodology: single codebase, env-based config, stateless processes, and more.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Architecture -->
+    <section class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Agent Pipeline</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Tasks flow through specialized agents in sequence, with parallel execution and automatic fallback at every stage.</p>
+            </div>
+
+            <div class="fade-in">
+                <!-- Desktop Pipeline -->
+                <div class="hidden md:flex items-center justify-center gap-0 mb-8">
+                    <div class="flow-box rounded-lg px-5 py-3 text-center">
+                        <span class="text-xs text-slate-500 block mb-1">Input</span>
+                        <span class="text-sm font-semibold text-white">Task</span>
+                    </div>
+                    <div class="flow-connector mx-1"></div>
+                    <div class="flow-box rounded-lg px-5 py-3 text-center">
+                        <span class="text-xs text-slate-500 block mb-1">Step 1</span>
+                        <span class="text-sm font-semibold text-accent">CodeAgent</span>
+                    </div>
+                    <div class="flow-connector mx-1"></div>
+                    <div class="flow-box rounded-lg px-5 py-3 text-center">
+                        <span class="text-xs text-slate-500 block mb-1">Step 2</span>
+                        <span class="text-sm font-semibold text-accent">TestAgent</span>
+                    </div>
+                    <div class="flow-connector mx-1"></div>
+                    <div class="flow-box rounded-lg px-5 py-3 text-center">
+                        <span class="text-xs text-slate-500 block mb-1">Step 3</span>
+                        <span class="text-sm font-semibold text-accent">SecurityAgent</span>
+                    </div>
+                    <div class="flow-connector mx-1"></div>
+                    <div class="flow-box rounded-lg px-5 py-3 text-center">
+                        <span class="text-xs text-slate-500 block mb-1">Step 4</span>
+                        <span class="text-sm font-semibold text-accent">DeployAgent</span>
+                    </div>
+                    <div class="flow-connector mx-1"></div>
+                    <div class="flow-box rounded-lg px-5 py-3 text-center">
+                        <span class="text-xs text-slate-500 block mb-1">Output</span>
+                        <span class="text-sm font-semibold text-white">Result</span>
+                    </div>
+                </div>
+
+                <!-- Mobile Pipeline -->
+                <div class="md:hidden flex flex-col items-center gap-3 mb-8">
+                    <div class="flow-box rounded-lg px-6 py-3 text-center w-48">
+                        <span class="text-xs text-slate-500 block mb-1">Input</span>
+                        <span class="text-sm font-semibold text-white">Task</span>
+                    </div>
+                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    <div class="flow-box rounded-lg px-6 py-3 text-center w-48">
+                        <span class="text-sm font-semibold text-accent">CodeAgent</span>
+                    </div>
+                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    <div class="flow-box rounded-lg px-6 py-3 text-center w-48">
+                        <span class="text-sm font-semibold text-accent">TestAgent</span>
+                    </div>
+                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    <div class="flow-box rounded-lg px-6 py-3 text-center w-48">
+                        <span class="text-sm font-semibold text-accent">SecurityAgent</span>
+                    </div>
+                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    <div class="flow-box rounded-lg px-6 py-3 text-center w-48">
+                        <span class="text-sm font-semibold text-accent">DeployAgent</span>
+                    </div>
+                    <svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+                    <div class="flow-box rounded-lg px-6 py-3 text-center w-48">
+                        <span class="text-xs text-slate-500 block mb-1">Output</span>
+                        <span class="text-sm font-semibold text-white">Result</span>
+                    </div>
+                </div>
+
+                <p class="text-center text-xs text-slate-500 italic">Parallel execution across stages with automatic fallback and retry on failure</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Stats -->
+    <section class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Performance</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Built for production reliability and speed.</p>
+            </div>
+
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 fade-in">
+                <div class="stat-card rounded-xl p-6 text-center card-hover">
+                    <div class="text-3xl md:text-4xl font-bold gradient-blue mb-2">95%+</div>
+                    <div class="text-sm text-slate-400">Success Rate</div>
+                </div>
+                <div class="stat-card rounded-xl p-6 text-center card-hover">
+                    <div class="text-3xl md:text-4xl font-bold gradient-blue mb-2">&lt;100ms</div>
+                    <div class="text-sm text-slate-400">Intent Analysis</div>
+                </div>
+                <div class="stat-card rounded-xl p-6 text-center card-hover">
+                    <div class="text-3xl md:text-4xl font-bold gradient-blue mb-2">10</div>
+                    <div class="text-sm text-slate-400">Concurrent Operations</div>
+                </div>
+                <div class="stat-card rounded-xl p-6 text-center card-hover">
+                    <div class="text-3xl md:text-4xl font-bold gradient-blue mb-2">12/12</div>
+                    <div class="text-sm text-slate-400">Factor Compliance</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack -->
+    <section class="py-24 px-6">
+        <div class="max-w-6xl mx-auto">
+            <div class="text-center mb-16 fade-in">
+                <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Tech Stack</h2>
+                <p class="text-slate-400 max-w-xl mx-auto">Production-grade infrastructure from frontend to deployment.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 fade-in">
+                <!-- Backend -->
+                <div class="glass rounded-xl p-6 card-hover">
+                    <h3 class="text-sm font-semibold text-accent uppercase tracking-wider mb-4">Backend</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Python</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Flask</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Gunicorn</span>
+                    </div>
+                </div>
+
+                <!-- Database -->
+                <div class="glass rounded-xl p-6 card-hover">
+                    <h3 class="text-sm font-semibold text-accent uppercase tracking-wider mb-4">Database</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">PostgreSQL</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">SQLAlchemy</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Alembic</span>
+                    </div>
+                </div>
+
+                <!-- Queue -->
+                <div class="glass rounded-xl p-6 card-hover">
+                    <h3 class="text-sm font-semibold text-accent uppercase tracking-wider mb-4">Queue</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Redis</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Celery</span>
+                    </div>
+                </div>
+
+                <!-- Security -->
+                <div class="glass rounded-xl p-6 card-hover">
+                    <h3 class="text-sm font-semibold text-accent uppercase tracking-wider mb-4">Security</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">JWT</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">bcrypt</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Flask-Talisman</span>
+                    </div>
+                </div>
+
+                <!-- Monitoring -->
+                <div class="glass rounded-xl p-6 card-hover">
+                    <h3 class="text-sm font-semibold text-accent uppercase tracking-wider mb-4">Monitoring</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Prometheus</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Grafana</span>
+                    </div>
+                </div>
+
+                <!-- Infrastructure -->
+                <div class="glass rounded-xl p-6 card-hover">
+                    <h3 class="text-sm font-semibold text-accent uppercase tracking-wider mb-4">Infrastructure</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Docker</span>
+                        <span class="tech-pill px-3 py-1.5 rounded-md text-sm text-slate-300">Kubernetes</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 px-6 border-t border-white/5">
+        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-slate-500">Built by ELO from Z.E Digital Tech</p>
+            <div class="flex items-center gap-6">
+                <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank" class="text-sm text-slate-500 hover:text-accent transition-colors">GitHub</a>
+                <a href="https://zedigital.tech" target="_blank" class="text-sm text-slate-500 hover:text-accent transition-colors">Portfolio</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll Animation -->
+    <script>
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry, index) => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.classList.add('visible');
+                    }, index * 80);
+                }
+            });
+        }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+    </script>
+</body>
+</html>
