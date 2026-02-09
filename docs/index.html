@@ -275,7 +275,10 @@
                             <div class="flex gap-1.5"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-amber-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div></div>
                             <span class="text-xs text-muted font-medium">PRP-AI Dashboard</span>
                         </div>
-                        <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span><span class="text-xs text-green-400 font-medium">Live</span></div>
+                        <div class="flex items-center gap-3">
+                            <div id="apiStatus" class="flex items-center gap-1.5"><span class="w-2 h-2 bg-muted/50 rounded-full"></span><span class="text-xs text-muted font-medium">Connecting...</span></div>
+                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span><span class="text-xs text-green-400 font-medium">Live</span></div>
+                        </div>
                     </div>
 
                     <!-- Metric Cards -->
@@ -486,7 +489,7 @@
             <div class="space-y-4">
                 <div><label class="block text-xs font-medium text-muted mb-1.5">Task Description</label><input id="taskDescInput" type="text" placeholder="Describe the task..." class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm placeholder-muted/50 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"></div>
                 <div><label class="block text-xs font-medium text-muted mb-1.5">Priority</label><select id="taskPriorityInput" class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option><option value="Critical">Critical</option></select></div>
-                <div><label class="block text-xs font-medium text-muted mb-1.5">Agent Assignment</label><select id="taskAgentInput" class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"><option value="Auto">Auto-assign</option><option value="Research Agent">Research Agent</option><option value="Analysis Agent">Analysis Agent</option><option value="Writing Agent">Writing Agent</option><option value="Code Agent">Code Agent</option><option value="Review Agent">Review Agent</option><option value="Deploy Agent">Deploy Agent</option></select></div>
+                <div><label class="block text-xs font-medium text-muted mb-1.5">Agent Assignment</label><select id="taskAgentInput" class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"><option value="Auto">Auto-assign</option><option value="Code Agent">CodeAgent</option><option value="Analysis Agent">AnalysisAgent</option><option value="Writing Agent">DocsAgent</option><option value="Review Agent">SecurityAgent</option><option value="Deploy Agent">DeployAgent</option><option value="Research Agent">TestAgent</option></select></div>
                 <button onclick="submitNewTask()" class="w-full px-4 py-2.5 text-sm font-semibold text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors">Submit Task</button>
             </div>
         </div>
@@ -495,6 +498,34 @@
     <!-- ===== JAVASCRIPT ===== -->
     <script>
     (function() {
+        // ========== API CONFIGURATION ==========
+        const API_BASE = 'https://zedigital-prp-ai.fly.dev';
+        let apiConnected = false;
+
+        async function apiFetch(path, options = {}) {
+            try {
+                const res = await fetch(API_BASE + path, {
+                    ...options,
+                    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+                });
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return await res.json();
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function setApiStatus(connected) {
+            apiConnected = connected;
+            const el = document.getElementById('apiStatus');
+            if (!el) return;
+            if (connected) {
+                el.innerHTML = '<span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span><span class="text-xs text-green-400 font-medium">API Connected</span>';
+            } else {
+                el.innerHTML = '<span class="w-2 h-2 bg-amber-400 rounded-full"></span><span class="text-xs text-amber-400 font-medium">Simulation</span>';
+            }
+        }
+
         // Mobile menu
         const hamburgerBtn = document.getElementById('hamburgerBtn');
         const mobileMenu = document.getElementById('mobileMenu');
@@ -528,20 +559,23 @@
         // ========== DASHBOARD LOGIC ==========
 
         // Counter animation
+        function animateCounter(el, target) {
+            const duration = 2000;
+            const start = performance.now();
+            function update(now) {
+                const p = Math.min((now - start) / duration, 1);
+                const eased = 1 - Math.pow(1 - p, 3);
+                el.textContent = Math.floor(eased * target).toLocaleString();
+                if (p < 1) requestAnimationFrame(update);
+            }
+            requestAnimationFrame(update);
+        }
+
         const counterObserver = new IntersectionObserver(entries => {
             entries.forEach(en => {
                 if (en.isIntersecting) {
                     en.target.querySelectorAll('[data-counter]').forEach(el => {
-                        const target = parseInt(el.dataset.target);
-                        const duration = 2000;
-                        const start = performance.now();
-                        function update(now) {
-                            const p = Math.min((now - start) / duration, 1);
-                            const eased = 1 - Math.pow(1 - p, 3);
-                            el.textContent = Math.floor(eased * target).toLocaleString();
-                            if (p < 1) requestAnimationFrame(update);
-                        }
-                        requestAnimationFrame(update);
+                        animateCounter(el, parseInt(el.dataset.target));
                     });
                     counterObserver.unobserve(en.target);
                 }
@@ -550,14 +584,20 @@
         const dm = document.getElementById('dashMetrics');
         if (dm) counterObserver.observe(dm);
 
-        // Agent status data
-        const agents = [
-            { name: 'Research Agent', color: 'accent', tasks: 2341, avg: '3.2s', active: true },
-            { name: 'Analysis Agent', color: 'amber-400', tasks: 1987, avg: '2.8s', active: true },
-            { name: 'Writing Agent', color: 'cyan-400', tasks: 3102, avg: '4.1s', active: true },
-            { name: 'Code Agent', color: 'green-400', tasks: 1456, avg: '2.1s', active: true },
-            { name: 'Review Agent', color: 'purple-400', tasks: 2891, avg: '1.9s', active: true },
-            { name: 'Deploy Agent', color: 'red-400', tasks: 1070, avg: '5.3s', active: false },
+        // Agent color mapping for backend agents
+        const agentColorMap = {
+            'blue': 'accent', 'green': 'green-400', 'red': 'red-400',
+            'purple': 'purple-400', 'amber': 'amber-400', 'cyan': 'cyan-400'
+        };
+
+        // Agent status data (fallback)
+        let agents = [
+            { id: 'code-agent', name: 'CodeAgent', color: 'accent', tasks: 2341, avg: '3.2s', active: true },
+            { id: 'test-agent', name: 'TestAgent', color: 'green-400', tasks: 1987, avg: '2.8s', active: true },
+            { id: 'security-agent', name: 'SecurityAgent', color: 'red-400', tasks: 3102, avg: '4.1s', active: true },
+            { id: 'deploy-agent', name: 'DeployAgent', color: 'purple-400', tasks: 1456, avg: '2.1s', active: true },
+            { id: 'analysis-agent', name: 'AnalysisAgent', color: 'amber-400', tasks: 2891, avg: '1.9s', active: true },
+            { id: 'docs-agent', name: 'DocsAgent', color: 'cyan-400', tasks: 1070, avg: '5.3s', active: false },
         ];
 
         const logMessages = [
@@ -574,6 +614,40 @@
             'Processing webhook events...',
             'Indexing search data...',
         ];
+
+        // Load agents from API
+        async function loadAgents() {
+            const data = await apiFetch('/api/agents');
+            if (data && data.agents) {
+                agents = data.agents.map(a => ({
+                    id: a.id,
+                    name: a.name,
+                    color: agentColorMap[a.color] || 'accent',
+                    tasks: a.tasks_completed || Math.floor(1000 + Math.random() * 3000),
+                    avg: a.avg_response_time ? a.avg_response_time.toFixed(1) + 's' : (1 + Math.random() * 4).toFixed(1) + 's',
+                    active: a.enabled,
+                }));
+                setApiStatus(true);
+                renderAgentCards();
+                addLogEntry('<span class="text-green-400">API connected</span> - Loading live agent data');
+            } else {
+                setApiStatus(false);
+                addLogEntry('<span class="text-amber-400">API unavailable</span> - Running in simulation mode');
+            }
+        }
+
+        // Load dashboard metrics from API
+        async function loadDashboard() {
+            const data = await apiFetch('/api/dashboard');
+            if (data) {
+                const counterEl = document.querySelector('[data-counter]');
+                if (counterEl) {
+                    const total = data.tasks_processed + (data.tasks_completed * 15);
+                    counterEl.dataset.target = total;
+                    animateCounter(counterEl, total);
+                }
+            }
+        }
 
         function renderAgentCards() {
             const grid = document.getElementById('agentStatusGrid');
@@ -602,7 +676,7 @@
                             <span class="w-2 h-2 ${dotColor} rounded-full ${ag.active ? 'animate-pulse' : ''}"></span>
                             <span class="text-sm font-semibold text-white">${ag.name}</span>
                         </div>
-                        <div class="toggle-switch ${ag.active ? 'on' : 'off'}" data-agent="${i}"></div>
+                        <div class="toggle-switch ${ag.active ? 'on' : 'off'}" data-agent="${i}" data-agent-id="${ag.id || ''}"></div>
                     </div>
                     <div class="flex items-center justify-between text-xs text-muted mb-2">
                         <span>Status: <span class="${statusColor} font-medium">${status}</span></span>
@@ -618,11 +692,22 @@
                 grid.appendChild(card);
             });
             document.getElementById('activeAgentCount').textContent = activeCount;
-            // Toggle switches
+            // Toggle switches - call real API when connected
             grid.querySelectorAll('.toggle-switch').forEach(sw => {
-                sw.addEventListener('click', function() {
+                sw.addEventListener('click', async function() {
                     const idx = parseInt(this.dataset.agent);
+                    const agentId = this.dataset.agentId;
+                    if (apiConnected && agentId) {
+                        const result = await apiFetch(`/api/agents/${agentId}/toggle`, { method: 'POST' });
+                        if (result) {
+                            agents[idx].active = result.enabled;
+                            addLogEntry(`${result.name} ${result.enabled ? '<span class="text-green-400">enabled</span>' : '<span class="text-amber-400">disabled</span>'} via API`);
+                            renderAgentCards();
+                            return;
+                        }
+                    }
                     agents[idx].active = !agents[idx].active;
+                    addLogEntry(`${agents[idx].name} ${agents[idx].active ? 'enabled' : 'disabled'}`);
                     renderAgentCards();
                 });
             });
@@ -637,19 +722,41 @@
         renderAgentCards();
 
         // Task Queue
-        const taskData = [
-            { id: 4522, name: 'Generate quarterly report', agent: 'Writing Agent', status: 'Completed', progress: 100 },
-            { id: 4523, name: 'Analyze user behavior data', agent: 'Analysis Agent', status: 'Completed', progress: 100 },
-            { id: 4524, name: 'Refactor auth middleware', agent: 'Code Agent', status: 'Completed', progress: 100 },
-            { id: 4525, name: 'Security audit: payment module', agent: 'Review Agent', status: 'Processing', progress: 72 },
-            { id: 4526, name: 'Deploy v2.4.1 to staging', agent: 'Deploy Agent', status: 'Processing', progress: 45 },
-            { id: 4527, name: 'Research competitor API features', agent: 'Research Agent', status: 'Processing', progress: 23 },
-            { id: 4528, name: 'Write integration tests for orders', agent: 'Code Agent', status: 'Queued', progress: 0 },
-            { id: 4529, name: 'Optimize database indexing', agent: 'Analysis Agent', status: 'Queued', progress: 0 },
-            { id: 4530, name: 'Generate API documentation', agent: 'Writing Agent', status: 'Queued', progress: 0 },
-            { id: 4531, name: 'Review PR #847: User dashboard', agent: 'Review Agent', status: 'Queued', progress: 0 },
+        let taskData = [
+            { id: 4522, name: 'Generate quarterly report', agent: 'DocsAgent', status: 'Completed', progress: 100 },
+            { id: 4523, name: 'Analyze user behavior data', agent: 'AnalysisAgent', status: 'Completed', progress: 100 },
+            { id: 4524, name: 'Refactor auth middleware', agent: 'CodeAgent', status: 'Completed', progress: 100 },
+            { id: 4525, name: 'Security audit: payment module', agent: 'SecurityAgent', status: 'Processing', progress: 72 },
+            { id: 4526, name: 'Deploy v2.4.1 to staging', agent: 'DeployAgent', status: 'Processing', progress: 45 },
+            { id: 4527, name: 'Research competitor API features', agent: 'AnalysisAgent', status: 'Processing', progress: 23 },
+            { id: 4528, name: 'Write integration tests for orders', agent: 'TestAgent', status: 'Queued', progress: 0 },
+            { id: 4529, name: 'Optimize database indexing', agent: 'AnalysisAgent', status: 'Queued', progress: 0 },
+            { id: 4530, name: 'Generate API documentation', agent: 'DocsAgent', status: 'Queued', progress: 0 },
+            { id: 4531, name: 'Review PR #847: User dashboard', agent: 'CodeAgent', status: 'Queued', progress: 0 },
         ];
         let nextTaskId = 4532;
+
+        // Load tasks from API
+        async function loadTasks() {
+            const data = await apiFetch('/api/tasks');
+            if (data && data.tasks && data.tasks.length > 0) {
+                taskData = data.tasks.map((t, i) => {
+                    const statusMap = { completed: 'Completed', processing: 'Processing', queued: 'Queued' };
+                    const agentObj = agents.find(a => a.id === t.agent_id);
+                    return {
+                        id: 4522 + i,
+                        realId: t.id,
+                        name: t.title,
+                        agent: agentObj ? agentObj.name : t.agent_id,
+                        status: statusMap[t.status] || 'Queued',
+                        progress: t.progress,
+                        priority: t.priority ? t.priority.charAt(0).toUpperCase() + t.priority.slice(1) : undefined,
+                    };
+                });
+                nextTaskId = 4522 + taskData.length;
+                renderTasks();
+            }
+        }
 
         function renderTasks() {
             const container = document.getElementById('taskQueue');
@@ -670,9 +777,9 @@
                         </div>
                         <div class="flex items-center gap-3 text-[10px] text-muted">
                             <span>${t.agent}</span>
-                            <span class="${statusColors[t.status]} font-medium">${t.status}</span>
+                            <span class="${statusColors[t.status] || 'text-muted'} font-medium">${t.status}</span>
                         </div>
-                        <div class="task-progress-bar mt-1.5"><div class="task-progress-fill ${barColors[t.status]}" style="width:${t.progress}%"></div></div>
+                        <div class="task-progress-bar mt-1.5"><div class="task-progress-fill ${barColors[t.status] || 'bg-muted/30'}" style="width:${t.progress}%"></div></div>
                     </div>
                 `;
                 container.appendChild(row);
@@ -688,7 +795,6 @@
                     if (t.progress >= 100) { t.status = 'Completed'; t.progress = 100; }
                 }
             });
-            // Start queued tasks if processing slots available
             const processing = taskData.filter(t => t.status === 'Processing').length;
             if (processing < 3) {
                 const next = taskData.find(t => t.status === 'Queued');
@@ -700,14 +806,45 @@
         // New Task Modal
         window.closeTaskModal = function() { document.getElementById('taskModal').classList.remove('open'); };
         document.getElementById('newTaskBtn').addEventListener('click', () => document.getElementById('taskModal').classList.add('open'));
-        window.submitNewTask = function() {
+        window.submitNewTask = async function() {
             const desc = document.getElementById('taskDescInput').value.trim();
             if (!desc) return;
             const priority = document.getElementById('taskPriorityInput').value;
-            let agent = document.getElementById('taskAgentInput').value;
+            let agentSelect = document.getElementById('taskAgentInput').value;
+
+            // Map display names to API agent IDs
+            const agentNameToId = {
+                'Research Agent': 'analysis-agent', 'Analysis Agent': 'analysis-agent',
+                'Writing Agent': 'docs-agent', 'Code Agent': 'code-agent',
+                'Review Agent': 'security-agent', 'Deploy Agent': 'deploy-agent',
+            };
+            let agentId = agentSelect === 'Auto' ? 'auto' : (agentNameToId[agentSelect] || 'auto');
+
+            if (apiConnected) {
+                const result = await apiFetch('/api/tasks', {
+                    method: 'POST',
+                    body: JSON.stringify({ title: desc, priority: priority.toLowerCase(), agent_id: agentId }),
+                });
+                if (result) {
+                    const agentName = result.agent_name || agentSelect;
+                    taskData.push({ id: nextTaskId++, realId: result.id, name: desc, agent: agentName, status: 'Queued', progress: 0, priority });
+                    renderTasks();
+                    closeTaskModal();
+                    document.getElementById('taskDescInput').value = '';
+                    addLogEntry(`<span class="text-green-400">API:</span> Task created - "${desc}" assigned to ${agentName}`);
+                    setTimeout(() => {
+                        const t = taskData.find(x => x.id === nextTaskId - 1);
+                        if (t && t.status === 'Queued') { t.status = 'Processing'; t.progress = 5; renderTasks(); addLogEntry(`${agentName} started processing task #${t.id}`); }
+                    }, 2000);
+                    return;
+                }
+            }
+
+            // Fallback to local simulation
+            let agent = agentSelect;
             if (agent === 'Auto') {
                 const activeAgents = agents.filter(a => a.active);
-                agent = activeAgents[Math.floor(Math.random() * activeAgents.length)].name;
+                agent = activeAgents.length > 0 ? activeAgents[Math.floor(Math.random() * activeAgents.length)].name : 'CodeAgent';
             }
             taskData.push({ id: nextTaskId++, name: desc, agent, status: 'Queued', progress: 0, priority });
             renderTasks();
@@ -721,16 +858,26 @@
         };
 
         // Performance Chart
-        const submitted = [32,28,22,18,15,12,14,20,35,48,62,70,75,72,68,65,70,74,80,78,72,65,55,42];
-        const completed = [30,26,20,16,13,10,12,18,32,44,58,65,70,68,64,62,66,70,76,74,68,60,50,38];
+        let submitted = [32,28,22,18,15,12,14,20,35,48,62,70,75,72,68,65,70,74,80,78,72,65,55,42];
+        let completed = [30,26,20,16,13,10,12,18,32,44,58,65,70,68,64,62,66,70,76,74,68,60,50,38];
+
+        // Load metrics from API for chart
+        async function loadMetrics() {
+            const data = await apiFetch('/api/metrics?hours=24');
+            if (data && data.data_points && data.data_points.length > 0) {
+                submitted = data.data_points.map(d => d.tasks_submitted);
+                completed = data.data_points.map(d => d.tasks_completed);
+                buildChart();
+                addLogEntry('<span class="text-green-400">API:</span> Real-time metrics loaded for chart');
+            }
+        }
 
         function buildChart() {
             const svg = document.getElementById('perfChart');
-            const w = 800, h = 200, pad = 40, maxVal = 85;
+            const w = 800, h = 200, pad = 40;
+            const maxVal = Math.max(85, Math.max(...submitted, ...completed) + 10);
             let html = `<defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.2"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></linearGradient><linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.15"/><stop offset="100%" stop-color="#7dd3fc" stop-opacity="0"/></linearGradient></defs>`;
-            // Grid
             for (let i = 0; i < 4; i++) { const y = pad + i * ((h - pad * 2) / 3); html += `<line x1="${pad}" y1="${y}" x2="${w - 10}" y2="${y}" stroke="#1E293B" stroke-width="1"/><text x="${pad - 5}" y="${y + 4}" fill="#64748B" font-size="10" text-anchor="end">${Math.round(maxVal - i * maxVal / 3)}</text>`; }
-            // X labels
             ['00:00','06:00','12:00','18:00','24:00'].forEach((l, i) => {
                 const x = pad + i * ((w - pad - 10) / 4);
                 html += `<text x="${x}" y="${h - 5}" fill="#64748B" font-size="10" text-anchor="middle">${l}</text>`;
@@ -744,23 +891,18 @@
             }
             const subPts = toPoints(submitted);
             const comPts = toPoints(completed);
-            // Fill areas
             const firstSub = `${pad},${h - pad}`;
-            const lastSub = `${pad + 23 * ((w - pad - 10) / 23)},${h - pad}`;
+            const lastSub = `${pad + (submitted.length - 1) * ((w - pad - 10) / (submitted.length - 1))},${h - pad}`;
             html += `<polygon points="${subPts} ${lastSub} ${firstSub}" fill="url(#cg1)"/>`;
             html += `<polygon points="${comPts} ${lastSub} ${firstSub}" fill="url(#cg2)"/>`;
-            // Lines
-            html += `<polyline id="chartLine1" points="${subPts}" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-chart-line"/>`;
-            html += `<polyline id="chartLine2" points="${comPts}" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-chart-line"/>`;
-            // Hover dots
+            html += `<polyline id="chartLine1" points="${subPts}" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-chart-line animated"/>`;
+            html += `<polyline id="chartLine2" points="${comPts}" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-chart-line animated"/>`;
             submitted.forEach((v, i) => {
-                const x = pad + i * ((w - pad - 10) / 23);
+                const x = pad + i * ((w - pad - 10) / (submitted.length - 1));
                 const y1 = pad + (1 - v / maxVal) * (h - pad * 2);
-                const y2 = pad + (1 - completed[i] / maxVal) * (h - pad * 2);
-                html += `<circle cx="${x}" cy="${y1}" r="12" fill="transparent" class="chart-hover-dot" data-hour="${i}" data-sub="${v}" data-com="${completed[i]}"/>`;
+                html += `<circle cx="${x}" cy="${y1}" r="12" fill="transparent" class="chart-hover-dot" data-hour="${i}" data-sub="${v}" data-com="${completed[i] || 0}"/>`;
             });
             svg.innerHTML = html;
-            // Hover
             svg.querySelectorAll('.chart-hover-dot').forEach(dot => {
                 dot.addEventListener('mouseenter', function(e) {
                     const tip = document.getElementById('chartTooltip');
@@ -791,7 +933,6 @@
 
         // System Log
         const sysLogEl = document.getElementById('systemLog');
-        const agentNames = ['Research Agent', 'Analysis Agent', 'Writing Agent', 'Code Agent', 'Review Agent', 'Deploy Agent'];
         const logTemplates = [
             (a, id) => `${a} completed task #${id} in ${(1 + Math.random() * 5).toFixed(1)}s`,
             (a, id) => `New task #${id} assigned to ${a}`,
@@ -819,17 +960,52 @@
 
         // Seed initial log entries
         for (let i = 0; i < 8; i++) {
-            const a = agentNames[Math.floor(Math.random() * agentNames.length)];
+            const a = agents[Math.floor(Math.random() * agents.length)].name;
             const tpl = logTemplates[Math.floor(Math.random() * logTemplates.length)];
             addLogEntry(tpl(a, logTaskId++));
         }
 
         // Auto-generate log entries
         setInterval(() => {
-            const a = agentNames[Math.floor(Math.random() * agentNames.length)];
+            const a = agents[Math.floor(Math.random() * agents.length)].name;
             const tpl = logTemplates[Math.floor(Math.random() * logTemplates.length)];
             addLogEntry(tpl(a, logTaskId++));
         }, 2500);
+
+        // ========== INITIALIZE API CONNECTION ==========
+        async function initApi() {
+            addLogEntry('Connecting to PRP-AI backend...');
+            const health = await apiFetch('/api/health');
+            if (health && health.status === 'healthy') {
+                setApiStatus(true);
+                addLogEntry(`<span class="text-green-400">Connected to PRP-AI API v${health.version}</span> (uptime: ${health.uptime_seconds}s)`);
+                await loadAgents();
+                await loadTasks();
+                await loadDashboard();
+                await loadMetrics();
+            } else {
+                setApiStatus(false);
+                addLogEntry('<span class="text-amber-400">Backend unavailable</span> - Dashboard running in simulation mode');
+            }
+        }
+
+        // Periodically refresh data from API
+        setInterval(async () => {
+            if (!apiConnected) {
+                const health = await apiFetch('/api/health');
+                if (health && health.status === 'healthy') {
+                    setApiStatus(true);
+                    addLogEntry('<span class="text-green-400">API reconnected</span>');
+                    await loadAgents();
+                    await loadTasks();
+                    await loadMetrics();
+                }
+                return;
+            }
+            await loadDashboard();
+        }, 30000);
+
+        initApi();
 
     })();
     </script>
