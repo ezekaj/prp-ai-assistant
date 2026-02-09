@@ -415,7 +415,13 @@
                             </button>
                             <div id="ibanDetails" class="iban-details">
                                 <div class="px-4 pb-4 space-y-2 border-t border-border pt-3">
-                                    <p class="text-xs text-muted">Contact <span class="text-white">elvizekaj@zedigital.tech</span> for IBAN and bank details for wire transfer.</p>
+                                    <div class="flex items-center justify-between">
+                                        <div>
+                                            <p class="text-xs text-muted mb-1">IBAN</p>
+                                            <p class="text-sm text-white font-mono">AL-C0100002334708</p>
+                                        </div>
+                                        <button onclick="navigator.clipboard.writeText('AL-C0100002334708');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)" class="text-xs text-accent hover:text-white transition-colors px-3 py-1.5 rounded-lg border border-border hover:border-accent flex-shrink-0">Copy</button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
