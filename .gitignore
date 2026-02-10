@@ -66,6 +66,7 @@ logs/
 *.pem
 secrets.txt
 credentials.json
+.env.docker
 
 # Temporary files
 *.tmp
