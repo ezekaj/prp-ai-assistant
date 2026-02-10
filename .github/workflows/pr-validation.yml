@@ -10,13 +10,13 @@ jobs:
     name: Code Quality
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-      
+
       - name: Install linting tools
         run: |
           pip install black flake8 isort mypy
@@ -38,8 +38,8 @@ jobs:
     name: 12-Factor Compliance Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: Check for environment variables
         run: |
           echo "Checking for proper environment variable usage..."
@@ -97,13 +97,13 @@ jobs:
           - 6379:6379
     
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-      
+
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
@@ -130,7 +130,7 @@ jobs:
           kill $APP_PID
       
       - name: Upload performance report
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: performance-report
           path: performance-report.html
@@ -140,8 +140,8 @@ jobs:
     name: Documentation Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: Check README
         run: |
           if [ ! -f "README.md" ]; then
@@ -168,8 +168,8 @@ jobs:
     name: Dependency Security Check
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      
+      - uses: actions/checkout@v4
+
       - name: Check for dependency updates
         run: |
           pip install pip-audit
