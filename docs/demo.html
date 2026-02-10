@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo — PRP-AI Assistant</title>
+    <meta name="description" content="Watch PRP-AI's 6 agents work together on a real development task. Animated walkthrough from code generation to deployment.">
+    <meta property="og:title" content="Demo — PRP-AI Assistant">
+    <meta property="og:description" content="See the multi-agent pipeline in action. Watch 6 AI agents coordinate on a development task.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://ezekaj.github.io/prp-ai-assistant/demo.html">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { inter: ['Inter', 'sans-serif'] }, colors: { surface: '#0B0F19', 'surface-light': '#111827', 'surface-card': '#1E293B', accent: '#3B82F6', 'accent-hover': '#2563EB', muted: '#94A3B8', border: '#1E293B' } } }
+        }
+    </script>
+</head>
+<body class="antialiased">
+
+    <!-- NAV -->
+    <nav class="site-nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg>
+                <span>PRP-AI</span>
+            </a>
+            <div class="nav-links hidden md:flex">
+                <a href="features.html">Features</a>
+                <a href="demo.html">Demo</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="nav-actions flex items-center gap-3">
+                <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank" class="nav-github hidden md:block">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="pricing.html" class="btn btn-primary btn-sm">Start Free Trial</a>
+                <button id="mobile-toggle" class="mobile-toggle md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="mobile-menu">
+            <a href="features.html">Features</a>
+            <a href="demo.html">Demo</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="faq.html">FAQ</a>
+            <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="pt-28 pb-8">
+        <div class="container text-center">
+            <span class="section-label">Live Demo</span>
+            <h1 class="section-title text-4xl sm:text-5xl">See PRP-AI in Action</h1>
+            <p class="section-desc mx-auto">Watch a complete development task flow through all 6 agents — from user request to production deployment.</p>
+        </div>
+    </section>
+
+    <!-- DEMO ANIMATION -->
+    <section class="section-sm">
+        <div class="container">
+            <div class="max-w-4xl mx-auto" id="demo-animation">
+
+                <!-- Task Input -->
+                <div class="text-center mb-8">
+                    <div class="inline-flex items-center gap-3 bg-surface-card border border-border rounded-lg px-5 py-3">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                        <span class="text-sm text-white font-medium">"Add user authentication to the API"</span>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+
+                    <!-- Step 0: User submits task -->
+                    <div class="demo-step" data-step="0">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="8.5" cy="7" r="4"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">Task Submitted</div>
+                                    <div class="text-xs text-muted">User request received by PRP-AI coordinator</div>
+                                </div>
+                            </div>
+                            <div class="demo-code-output" style="opacity:1">
+<span class="comment">// Task: Add user authentication to the API</span>
+<span class="comment">// Priority: High | Type: Feature Development</span>
+<span class="comment">// Agents assigned: Analysis > Code > Test > Security > Docs > Deploy</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 1: Task enters pipeline -->
+                    <div class="demo-step" data-step="1">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">Pipeline Activated</div>
+                                    <div class="text-xs text-muted">Task routed to agent pipeline</div>
+                                </div>
+                            </div>
+                            <div class="demo-progress-bar"><div class="demo-progress-fill" style="background:var(--accent)"></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Step 2: AnalysisAgent -->
+                    <div class="demo-step" data-step="2">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-purple-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">AnalysisAgent</div>
+                                    <div class="text-xs text-muted">Analyzing codebase, identifying patterns and architecture</div>
+                                </div>
+                                <span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-400 font-medium">Analyzing</span>
+                            </div>
+                            <div class="demo-progress-bar"><div class="demo-progress-fill" style="background:#8B5CF6"></div></div>
+                            <div class="mt-3 text-xs text-muted space-y-1">
+                                <div>Found: FastAPI application with SQLAlchemy ORM</div>
+                                <div>Pattern: Repository pattern with dependency injection</div>
+                                <div>Recommendation: JWT-based auth with bcrypt password hashing</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 3: CodeAgent -->
+                    <div class="demo-step" data-step="3">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-blue-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">CodeAgent</div>
+                                    <div class="text-xs text-muted">Generating auth middleware, routes, and models</div>
+                                </div>
+                                <span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-blue-500/15 text-blue-400 font-medium">Generating</span>
+                            </div>
+                            <div class="demo-code-output" style="opacity:0;transition:opacity 0.5s">
+<span class="keyword">from</span> fastapi <span class="keyword">import</span> APIRouter, Depends, HTTPException
+<span class="keyword">from</span> fastapi.security <span class="keyword">import</span> OAuth2PasswordBearer
+
+router = APIRouter(prefix=<span class="string">"/auth"</span>)
+
+<span class="keyword">@router.post</span>(<span class="string">"/login"</span>)
+<span class="keyword">async def</span> <span class="function">login</span>(credentials: LoginSchema):
+    user = <span class="keyword">await</span> authenticate_user(
+        credentials.email, credentials.password
+    )
+    <span class="keyword">if not</span> user:
+        <span class="keyword">raise</span> HTTPException(status_code=<span class="string">401</span>)
+    token = create_access_token(user.id)
+    <span class="keyword">return</span> {<span class="string">"access_token"</span>: token}
+
+<span class="keyword">@router.post</span>(<span class="string">"/register"</span>)
+<span class="keyword">async def</span> <span class="function">register</span>(data: RegisterSchema):
+    hashed = bcrypt.hash(data.password)
+    user = <span class="keyword">await</span> create_user(data.email, hashed)
+    <span class="keyword">return</span> {<span class="string">"id"</span>: user.id, <span class="string">"email"</span>: user.email}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 4: TestAgent -->
+                    <div class="demo-step" data-step="4">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-green-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">TestAgent</div>
+                                    <div class="text-xs text-muted">Generating 12 unit tests for auth module</div>
+                                </div>
+                                <span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-green-500/15 text-green-400 font-medium">Testing</span>
+                            </div>
+                            <div class="space-y-0.5 mt-3">
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_login_valid_credentials</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_login_invalid_password</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_login_nonexistent_user</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_register_new_user</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_register_duplicate_email</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_token_generation</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_token_expiration</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_password_hashing</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_protected_endpoint_no_token</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_protected_endpoint_valid_token</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_refresh_token</div>
+                                <div class="demo-test-result"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check-icon"><polyline points="20 6 9 17 4 12"/></svg> test_logout_invalidates_token</div>
+                            </div>
+                            <div class="mt-3 text-xs text-green-400 font-medium">12/12 tests passed -- Coverage: 94%</div>
+                        </div>
+                    </div>
+
+                    <!-- Step 5: SecurityAgent -->
+                    <div class="demo-step" data-step="5">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-red-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">SecurityAgent</div>
+                                    <div class="text-xs text-muted">Scanning for vulnerabilities, checking OWASP compliance</div>
+                                </div>
+                                <span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-red-500/15 text-red-400 font-medium">Scanning</span>
+                            </div>
+                            <div class="demo-progress-bar"><div class="demo-progress-fill" style="background:#EF4444"></div></div>
+                            <div class="flex items-center justify-between mt-4">
+                                <div class="text-xs text-muted space-y-1">
+                                    <div>SQL Injection: Protected (parameterized queries)</div>
+                                    <div>XSS: Protected (input validation)</div>
+                                    <div>CSRF: Protected (token-based auth)</div>
+                                    <div>Brute Force: Protected (rate limiting)</div>
+                                </div>
+                                <div class="demo-security-score" style="opacity:0;transition:opacity 0.5s"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 6: DocsAgent -->
+                    <div class="demo-step" data-step="6">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-cyan-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">DocsAgent</div>
+                                    <div class="text-xs text-muted">Generating API documentation for auth endpoints</div>
+                                </div>
+                                <span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-cyan-500/15 text-cyan-400 font-medium">Documenting</span>
+                            </div>
+                            <div class="demo-code-output" style="opacity:0;transition:opacity 0.5s">
+<span class="comment">## Authentication API</span>
+
+<span class="function">POST /auth/login</span>
+  Body: { email: string, password: string }
+  Response: { access_token: string, token_type: "bearer" }
+  Errors: 401 Unauthorized
+
+<span class="function">POST /auth/register</span>
+  Body: { email: string, password: string, name: string }
+  Response: { id: int, email: string }
+  Errors: 409 Conflict (duplicate email)
+
+<span class="function">POST /auth/refresh</span>
+  Headers: Authorization: Bearer &lt;token&gt;
+  Response: { access_token: string }
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 7: DeployAgent -->
+                    <div class="demo-step" data-step="7">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-orange-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">DeployAgent</div>
+                                    <div class="text-xs text-muted">Deploying to staging environment</div>
+                                </div>
+                                <span class="ml-auto text-xs px-2 py-0.5 rounded-full bg-orange-500/15 text-orange-400 font-medium">Deploying</span>
+                            </div>
+                            <div class="demo-progress-bar"><div class="demo-progress-fill" style="background:#F97316"></div></div>
+                            <div class="flex items-center justify-between mt-3">
+                                <div class="text-xs text-muted space-y-1">
+                                    <div>Building Docker image... done</div>
+                                    <div>Running migrations... done</div>
+                                    <div>Health check... passed</div>
+                                </div>
+                                <div class="demo-live-badge text-xs px-3 py-1 rounded-full bg-green-500/15 text-green-400 font-bold" style="opacity:0;transition:opacity 0.5s">LIVE</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Step 8: Dashboard Update -->
+                    <div class="demo-step" data-step="8">
+                        <div class="demo-agent-panel">
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-8 h-8 rounded-full bg-green-500/15 flex items-center justify-center">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+                                </div>
+                                <div>
+                                    <div class="text-sm font-semibold text-white">Task Complete</div>
+                                    <div class="text-xs text-muted">All agents finished, dashboard updated</div>
+                                </div>
+                            </div>
+                            <div class="demo-dash-update grid grid-cols-2 md:grid-cols-4 gap-4 mt-4" style="opacity:0;transition:opacity 0.5s">
+                                <div class="text-center p-3 bg-surface rounded-lg border border-border">
+                                    <div class="text-lg font-bold text-white">6/6</div>
+                                    <div class="text-xs text-muted">Agents Used</div>
+                                </div>
+                                <div class="text-center p-3 bg-surface rounded-lg border border-border">
+                                    <div class="text-lg font-bold text-green-400">94%</div>
+                                    <div class="text-xs text-muted">Coverage</div>
+                                </div>
+                                <div class="text-center p-3 bg-surface rounded-lg border border-border">
+                                    <div class="text-lg font-bold text-green-400">A+</div>
+                                    <div class="text-xs text-muted">Security</div>
+                                </div>
+                                <div class="text-center p-3 bg-surface rounded-lg border border-border">
+                                    <div class="text-lg font-bold text-white">32s</div>
+                                    <div class="text-xs text-muted">Total Time</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Replay -->
+                <div class="text-center mt-8">
+                    <button id="demo-replay" class="demo-replay-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 4v6h6M23 20v-6h-6"/><path d="M20.49 9A9 9 0 005.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 013.51 15"/></svg>
+                        Replay Demo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section border-t border-border">
+        <div class="container">
+            <div class="max-w-2xl mx-auto text-center reveal">
+                <h2 class="text-3xl font-black text-white mb-4">Ready to Automate Your Workflow?</h2>
+                <p class="text-muted mb-6">Start your 14-day free trial and let 6 AI agents handle the heavy lifting.</p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="pricing.html" class="btn btn-primary btn-lg">Start Free Trial</a>
+                    <a href="features.html" class="btn btn-secondary btn-lg">Explore Features</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg>
+                        <span>PRP-AI</span>
+                    </a>
+                    <p>Enterprise-grade autonomous multi-agent AI platform by ZeDigital.</p>
+                </div>
+                <div>
+                    <div class="footer-heading">Product</div>
+                    <ul class="footer-links">
+                        <li><a href="features.html">Features</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-heading">Resources</div>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank">GitHub</a></li>
+                        <li><a href="https://zedigital-prp-ai.fly.dev" target="_blank">API</a></li>
+                        <li><a href="mailto:elvizekaj@zedigital.tech">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-heading">Legal</div>
+                    <ul class="footer-links">
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>2025 ZeDigital. All rights reserved.</span>
+                <a href="mailto:elvizekaj@zedigital.tech">elvizekaj@zedigital.tech</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

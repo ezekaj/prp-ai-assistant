@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing — PRP-AI Assistant</title>
+    <meta name="description" content="PRP-AI pricing plans. Start with a 14-day free trial. Starter $99/mo, Professional $299/mo, Enterprise $799/mo.">
+    <meta property="og:title" content="Pricing — PRP-AI Assistant">
+    <meta property="og:description" content="Choose the right plan for your team. 14-day free trial on all plans.">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <link rel="canonical" href="https://ezekaj.github.io/prp-ai-assistant/pricing.html">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { inter: ['Inter', 'sans-serif'] }, colors: { surface: '#0B0F19', 'surface-light': '#111827', 'surface-card': '#1E293B', accent: '#3B82F6', 'accent-hover': '#2563EB', muted: '#94A3B8', border: '#1E293B' } } }
+        }
+    </script>
+</head>
+<body class="antialiased">
+
+    <!-- NAV -->
+    <nav class="site-nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg>
+                <span>PRP-AI</span>
+            </a>
+            <div class="nav-links hidden md:flex">
+                <a href="features.html">Features</a>
+                <a href="demo.html">Demo</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="nav-actions flex items-center gap-3">
+                <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank" class="nav-github hidden md:block">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                </a>
+                <a href="pricing.html" class="btn btn-primary btn-sm">Start Free Trial</a>
+                <button id="mobile-toggle" class="mobile-toggle md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+                </button>
+            </div>
+        </div>
+        <div id="mobile-menu" class="mobile-menu">
+            <a href="features.html">Features</a>
+            <a href="demo.html">Demo</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="faq.html">FAQ</a>
+            <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank">GitHub</a>
+        </div>
+    </nav>
+
+    <!-- HERO -->
+    <section class="pt-28 pb-8">
+        <div class="container text-center">
+            <span class="section-label">Pricing</span>
+            <h1 class="section-title text-4xl sm:text-5xl">Simple, Transparent Pricing</h1>
+            <p class="section-desc mx-auto">14-day free trial on all plans. No credit card required. Cancel anytime.</p>
+        </div>
+    </section>
+
+    <!-- PRICING TOGGLE + CARDS -->
+    <section class="section-sm">
+        <div class="container">
+            <!-- Toggle -->
+            <div class="pricing-toggle">
+                <span id="pricing-monthly-label" class="pricing-toggle-label active">Monthly</span>
+                <div id="pricing-toggle" class="pricing-toggle-switch"></div>
+                <span id="pricing-annual-label" class="pricing-toggle-label">Annual</span>
+                <span class="pricing-save-badge">Save 20%</span>
+            </div>
+
+            <!-- Cards -->
+            <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto mb-20">
+                <!-- Starter -->
+                <div class="pricing-card reveal reveal-delay-1">
+                    <div class="pricing-tier">Starter</div>
+                    <div class="pricing-amount">
+                        <span class="currency">$</span><span data-monthly="99" data-annual="79">99</span><span class="period">/mo</span>
+                    </div>
+                    <div class="pricing-annual-price" data-annual-detail="$950 billed annually">
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>2 Agents (Code + Test)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>100 tasks/month</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Basic dashboard</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Community support</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Single project</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" class="cross"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span class="line-through opacity-50">API access</span></li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="2" class="cross"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg><span class="line-through opacity-50">Custom agents</span></li>
+                    </ul>
+                    <a href="mailto:elvizekaj@zedigital.tech?subject=PRP-AI Starter Plan" class="btn btn-secondary w-full">Get Started</a>
+                </div>
+                <!-- Professional -->
+                <div class="pricing-card popular reveal reveal-delay-2">
+                    <div class="pricing-tier">Professional</div>
+                    <div class="pricing-amount">
+                        <span class="currency">$</span><span data-monthly="299" data-annual="239">299</span><span class="period">/mo</span>
+                    </div>
+                    <div class="pricing-annual-price" data-annual-detail="$2,870 billed annually">
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>All 6 agents</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>1,000 tasks/month</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Full dashboard + analytics</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Priority support (24h response)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>10 projects</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Full API access</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>GitHub/GitLab integration</li>
+                    </ul>
+                    <a href="mailto:elvizekaj@zedigital.tech?subject=PRP-AI Professional Plan" class="btn btn-primary w-full">Start Free Trial</a>
+                </div>
+                <!-- Enterprise -->
+                <div class="pricing-card reveal reveal-delay-3">
+                    <div class="pricing-tier">Enterprise</div>
+                    <div class="pricing-amount">
+                        <span class="currency">$</span><span data-monthly="799" data-annual="639">799</span><span class="period">/mo</span>
+                    </div>
+                    <div class="pricing-annual-price" data-annual-detail="$7,670 billed annually">
+                    </div>
+                    <ul class="pricing-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>All 6 agents</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Unlimited tasks</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Custom agents</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Dedicated support (1h response)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Unlimited projects</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>SSO/SAML authentication</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>SLA guarantee (99.9%)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>On-premise deployment</li>
+                    </ul>
+                    <a href="mailto:elvizekaj@zedigital.tech?subject=PRP-AI Enterprise - Schedule Demo" class="btn btn-secondary w-full">Schedule a Demo</a>
+                </div>
+            </div>
+
+            <!-- Feature Matrix -->
+            <div class="max-w-5xl mx-auto reveal">
+                <h2 class="section-title text-center mb-8">Full Feature Comparison</h2>
+                <div class="overflow-x-auto rounded-xl border border-border">
+                    <table class="feature-matrix">
+                        <thead>
+                            <tr>
+                                <th class="min-w-[200px]">Feature</th>
+                                <th class="min-w-[120px] text-center">Starter</th>
+                                <th class="min-w-[120px] text-center" style="color:#3B82F6">Professional</th>
+                                <th class="min-w-[120px] text-center">Enterprise</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="section-header"><td colspan="4">AI Agents</td></tr>
+                            <tr><td>CodeAgent</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>TestAgent</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>SecurityAgent</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>DeployAgent</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>AnalysisAgent</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>DocsAgent</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Custom Agents</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td></tr>
+
+                            <tr class="section-header"><td colspan="4">Usage Limits</td></tr>
+                            <tr><td>Tasks per month</td><td class="text-center">100</td><td class="text-center">1,000</td><td class="text-center">Unlimited</td></tr>
+                            <tr><td>Projects</td><td class="text-center">1</td><td class="text-center">10</td><td class="text-center">Unlimited</td></tr>
+                            <tr><td>Team members</td><td class="text-center">1</td><td class="text-center">10</td><td class="text-center">Unlimited</td></tr>
+                            <tr><td>Task history retention</td><td class="text-center">30 days</td><td class="text-center">1 year</td><td class="text-center">Unlimited</td></tr>
+
+                            <tr class="section-header"><td colspan="4">Dashboard & Analytics</td></tr>
+                            <tr><td>Basic dashboard</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Agent analytics</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Performance metrics</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Custom reports</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td></tr>
+
+                            <tr class="section-header"><td colspan="4">Integrations</td></tr>
+                            <tr><td>GitHub</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>GitLab</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Slack notifications</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>API access</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Webhooks</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Custom integrations</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td></tr>
+
+                            <tr class="section-header"><td colspan="4">Support & Security</td></tr>
+                            <tr><td>Community support</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>Priority support</td><td class="text-center">-</td><td class="text-center text-green-400">24h response</td><td class="text-center text-green-400">1h response</td></tr>
+                            <tr><td>Dedicated account manager</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>SSO/SAML</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td></tr>
+                            <tr><td>SLA guarantee</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center text-green-400">99.9%</td></tr>
+                            <tr><td>On-premise deployment</td><td class="text-center">-</td><td class="text-center">-</td><td class="text-center text-green-400">Yes</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PAYMENT METHODS -->
+    <section class="section bg-surface-light/30">
+        <div class="container">
+            <div class="max-w-4xl mx-auto">
+                <div class="text-center mb-8 reveal">
+                    <span class="section-label">Payment</span>
+                    <h2 class="section-title">Accepted Payment Methods</h2>
+                </div>
+                <div class="payment-methods reveal">
+                    <div class="payment-card">
+                        <div class="payment-card-title">PayPal</div>
+                        <div class="payment-card-detail">paypal.me/zelvi999</div>
+                        <button class="copy-btn" data-copy="https://paypal.me/zelvi999">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy link
+                        </button>
+                    </div>
+                    <div class="payment-card">
+                        <div class="payment-card-title">Bank Transfer (IBAN)</div>
+                        <div class="payment-card-detail">AL-C0100002334708</div>
+                        <button class="copy-btn" data-copy="AL-C0100002334708">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy IBAN
+                        </button>
+                    </div>
+                    <div class="payment-card">
+                        <div class="payment-card-title">Crypto (BSC - BEP20)</div>
+                        <div class="payment-card-detail">0x65ec5fcc684d1978cddaed29032aaeffc6248a84</div>
+                        <button class="copy-btn" data-copy="0x65ec5fcc684d1978cddaed29032aaeffc6248a84">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                            Copy address
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PRICING FAQ -->
+    <section class="section">
+        <div class="container">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-12 reveal">
+                    <span class="section-label">FAQ</span>
+                    <h2 class="section-title">Pricing Questions</h2>
+                </div>
+                <div class="reveal">
+                    <div class="faq-item">
+                        <button class="faq-question">Is there a free trial?<svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+                        <div class="faq-answer"><p>Yes. Every plan includes a 14-day free trial with full access to all features of that tier. No credit card required to start.</p></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">Can I switch plans?<svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+                        <div class="faq-answer"><p>Yes. You can upgrade or downgrade at any time. When upgrading, you get immediate access to the new features. When downgrading, your current features remain active until the end of the billing period.</p></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">Is there an enterprise discount for large teams?<svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+                        <div class="faq-answer"><p>Yes. We offer volume discounts for organizations with 50+ developers. Contact us at elvizekaj@zedigital.tech to discuss custom pricing.</p></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">What is your refund policy?<svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+                        <div class="faq-answer"><p>We offer a 30-day money-back guarantee on all plans. If you are not satisfied, contact support for a full refund within 30 days of your first payment.</p></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">What happens when I exceed my task limit?<svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg></button>
+                        <div class="faq-answer"><p>You will receive a notification at 80% and 100% usage. When you reach your limit, you can upgrade your plan or wait until the next billing cycle. Tasks already in progress will complete normally.</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ENTERPRISE CTA -->
+    <section class="section-sm border-t border-border">
+        <div class="container">
+            <div class="max-w-2xl mx-auto text-center reveal">
+                <h2 class="text-2xl font-bold text-white mb-3">Need a Custom Solution?</h2>
+                <p class="text-muted mb-6">Enterprise plans include custom agent development, on-premise deployment, dedicated support, and volume pricing for large teams.</p>
+                <a href="mailto:elvizekaj@zedigital.tech?subject=PRP-AI Enterprise - Schedule Demo" class="btn btn-primary btn-lg">Schedule a Demo</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg>
+                        <span>PRP-AI</span>
+                    </a>
+                    <p>Enterprise-grade autonomous multi-agent AI platform by ZeDigital.</p>
+                </div>
+                <div>
+                    <div class="footer-heading">Product</div>
+                    <ul class="footer-links">
+                        <li><a href="features.html">Features</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-heading">Resources</div>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank">GitHub</a></li>
+                        <li><a href="https://zedigital-prp-ai.fly.dev" target="_blank">API</a></li>
+                        <li><a href="mailto:elvizekaj@zedigital.tech">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-heading">Legal</div>
+                    <ul class="footer-links">
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>2025 ZeDigital. All rights reserved.</span>
+                <a href="mailto:elvizekaj@zedigital.tech">elvizekaj@zedigital.tech</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+</html>

@@ -3,10 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PRP-AI Assistant — Enterprise-Grade Autonomous AI</title>
-    <meta name="description" content="6 specialized AI agents. Zero manual intervention. 95%+ success rate. Enterprise-grade autonomous AI system.">
+    <title>PRP-AI Assistant — 6 AI Agents. One Platform. Zero Bottlenecks.</title>
+    <meta name="description" content="PRP-AI automates your entire development workflow with 6 specialized AI agents — from code generation to deployment. Enterprise-grade autonomous AI platform.">
+    <meta name="keywords" content="AI agents, code generation, automated testing, security scanning, deployment automation, DevOps AI">
+    <meta property="og:title" content="PRP-AI Assistant — Enterprise-Grade Multi-Agent AI Platform">
+    <meta property="og:description" content="6 specialized AI agents working in concert to automate your entire development workflow.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ezekaj.github.io/prp-ai-assistant/">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="PRP-AI Assistant — 6 AI Agents. One Platform.">
+    <meta name="twitter:description" content="Automate your entire development workflow with 6 specialized AI agents.">
+    <link rel="canonical" href="https://ezekaj.github.io/prp-ai-assistant/">
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
     <script>
         tailwind.config = {
             theme: {
@@ -25,990 +35,535 @@
             }
         }
     </script>
-    <style>
-        *, *::before, *::after { box-sizing: border-box; }
-        html { scroll-behavior: smooth; }
-        body { font-family: 'Inter', sans-serif; background: #0B0F19; color: #E2E8F0; }
-        .dot-grid {
-            background-image: radial-gradient(circle, rgba(59,130,246,0.15) 1px, transparent 1px);
-            background-size: 30px 30px;
-            animation: gridFloat 20s linear infinite;
-        }
-        @keyframes gridFloat { 0% { background-position: 0 0; } 100% { background-position: 30px 30px; } }
-        .pipeline-arrow { stroke-dasharray: 8 6; animation: dashMove 1.5s linear infinite; }
-        @keyframes dashMove { 0% { stroke-dashoffset: 28; } 100% { stroke-dashoffset: 0; } }
-        .traveling-dot { animation: travelDot 6s ease-in-out infinite; }
-        @keyframes travelDot { 0% { left: 0%; opacity: 0; } 5% { opacity: 1; } 95% { opacity: 1; } 100% { left: 100%; opacity: 0; } }
-        .traveling-dot-vertical { animation: travelDotV 6s ease-in-out infinite; }
-        @keyframes travelDotV { 0% { top: 0%; opacity: 0; } 5% { opacity: 1; } 95% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
-        .agent-details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.3s ease; }
-        .agent-details.expanded { max-height: 300px; padding-top: 12px; }
-        .hover-lift { transition: transform 0.2s ease, box-shadow 0.2s ease; }
-        .hover-lift:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.1); }
-        .pulse-slow { animation: pulseSlow 3s ease-in-out infinite; }
-        @keyframes pulseSlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 0.8; } }
-        .chart-gradient { fill: url(#chartGrad); }
-        .code-block { background: #0f172a; border: 1px solid #1e293b; border-radius: 8px; padding: 12px 16px; font-family: 'SF Mono', 'Fira Code', monospace; font-size: 13px; color: #94a3b8; }
-        .mobile-menu { display: none; }
-        .mobile-menu.open { display: flex; }
-        .metric-value { font-variant-numeric: tabular-nums; }
-        .reveal { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
-        .reveal.visible { opacity: 1; transform: translateY(0); }
-        .toggle-switch { width: 36px; height: 20px; border-radius: 10px; position: relative; cursor: pointer; transition: background 0.3s; }
-        .toggle-switch.on { background: #22c55e; }
-        .toggle-switch.off { background: #475569; }
-        .toggle-switch::after { content: ''; position: absolute; width: 16px; height: 16px; border-radius: 50%; background: white; top: 2px; transition: left 0.3s; }
-        .toggle-switch.on::after { left: 18px; }
-        .toggle-switch.off::after { left: 2px; }
-        .sparkline-bar { display: inline-block; width: 3px; margin-right: 1px; border-radius: 1px; background: #3B82F6; animation: sparkAnim 1.5s ease-in-out infinite; }
-        @keyframes sparkAnim { 0%, 100% { height: 8px; opacity: 0.4; } 50% { height: 18px; opacity: 1; } }
-        .dash-log-panel { font-family: 'SF Mono', 'Fira Code', monospace; font-size: 12px; }
-        .dash-log-panel::-webkit-scrollbar { width: 6px; }
-        .dash-log-panel::-webkit-scrollbar-track { background: #0f172a; }
-        .dash-log-panel::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
-        .task-progress-bar { height: 6px; border-radius: 3px; background: #1e293b; overflow: hidden; }
-        .task-progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
-        .task-progress-fill.processing { animation: progressPulse 2s ease-in-out infinite; }
-        @keyframes progressPulse { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; display: none; align-items: center; justify-content: center; }
-        .modal-overlay.open { display: flex; }
-        .svg-chart-line { stroke-dasharray: 1200; stroke-dashoffset: 1200; }
-        .svg-chart-line.animated { animation: drawLine 2s ease forwards; }
-        @keyframes drawLine { to { stroke-dashoffset: 0; } }
-        .agent-log-details { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
-        .agent-log-details.open { max-height: 200px; }
-        .iban-details { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-        .iban-details.open { max-height: 150px; }
-    </style>
 </head>
 <body class="antialiased">
 
     <!-- ===== NAV ===== -->
-    <nav class="fixed top-0 left-0 right-0 z-50 bg-surface/95 backdrop-blur-md border-b border-border">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <a href="#" class="flex items-center gap-2">
-                    <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg>
-                    <span class="text-lg font-bold text-white tracking-tight">PRP-AI</span>
+    <nav class="site-nav">
+        <div class="nav-inner">
+            <a href="index.html" class="nav-logo">
+                <svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg>
+                <span>PRP-AI</span>
+            </a>
+            <div class="nav-links hidden md:flex">
+                <a href="features.html">Features</a>
+                <a href="demo.html">Demo</a>
+                <a href="pricing.html">Pricing</a>
+                <a href="faq.html">FAQ</a>
+            </div>
+            <div class="nav-actions flex items-center gap-3">
+                <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank" class="nav-github hidden md:block">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
                 </a>
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="#product" class="text-sm text-muted hover:text-white transition-colors">Product</a>
-                    <a href="#architecture" class="text-sm text-muted hover:text-white transition-colors">Architecture</a>
-                    <a href="#dashboard" class="text-sm text-muted hover:text-white transition-colors">Dashboard</a>
-                    <a href="#security" class="text-sm text-muted hover:text-white transition-colors">Security</a>
-                    <a href="#pricing" class="text-sm text-muted hover:text-white transition-colors">Pricing</a>
-                </div>
-                <div class="hidden md:flex items-center gap-4">
-                    <a href="#" class="text-sm text-muted hover:text-white transition-colors">Login</a>
-                    <a href="#contact" class="inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors">Request Demo</a>
-                </div>
-                <button id="hamburgerBtn" class="md:hidden p-2 text-muted hover:text-white" aria-label="Toggle menu">
-                    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/></svg>
+                <a href="pricing.html" class="btn btn-primary btn-sm">Start Free Trial</a>
+                <button id="mobile-toggle" class="mobile-toggle md:hidden">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
             </div>
         </div>
-        <div id="mobileMenu" class="mobile-menu flex-col md:hidden bg-surface border-t border-border px-4 pb-4">
-            <a href="#product" class="py-3 text-sm text-muted hover:text-white border-b border-border">Product</a>
-            <a href="#architecture" class="py-3 text-sm text-muted hover:text-white border-b border-border">Architecture</a>
-            <a href="#dashboard" class="py-3 text-sm text-muted hover:text-white border-b border-border">Dashboard</a>
-            <a href="#security" class="py-3 text-sm text-muted hover:text-white border-b border-border">Security</a>
-            <a href="#pricing" class="py-3 text-sm text-muted hover:text-white border-b border-border">Pricing</a>
-            <a href="#" class="py-3 text-sm text-muted hover:text-white border-b border-border">Login</a>
-            <a href="#contact" class="mt-3 inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-white bg-accent rounded-lg">Request Demo</a>
+        <div id="mobile-menu" class="mobile-menu">
+            <a href="features.html">Features</a>
+            <a href="demo.html">Demo</a>
+            <a href="pricing.html">Pricing</a>
+            <a href="faq.html">FAQ</a>
+            <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank">GitHub</a>
         </div>
     </nav>
 
     <!-- ===== HERO ===== -->
-    <section class="dot-grid relative min-h-screen flex items-center justify-center pt-16">
-        <div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-surface pointer-events-none"></div>
-        <div class="relative z-10 max-w-4xl mx-auto px-4 text-center py-24">
-            <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-medium mb-8">
-                <span class="w-1.5 h-1.5 bg-accent rounded-full animate-pulse"></span>
-                Now Generally Available
-            </div>
-            <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight tracking-tight mb-6">Enterprise-Grade<br>Autonomous AI</h1>
-            <p class="text-lg sm:text-xl text-muted max-w-2xl mx-auto mb-10 leading-relaxed">6 specialized agents. Zero manual intervention. 95%+ success rate.</p>
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-14">
-                <a href="#contact" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors">
-                    Request Enterprise Demo
-                    <svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M5 12h14m-7-7l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </a>
-                <a href="#deploy" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-sm font-semibold text-white border border-border hover:border-muted rounded-lg transition-colors">
-                    Deploy with Docker
-                </a>
-            </div>
-            <div class="flex flex-wrap items-center justify-center gap-6 sm:gap-10">
-                <div class="flex items-center gap-2 text-xs text-muted/60 pulse-slow"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>12-Factor</div>
-                <div class="flex items-center gap-2 text-xs text-muted/60 pulse-slow" style="animation-delay:0.5s"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M2 5a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm14 1a1 1 0 11-2 0 1 1 0 012 0zM2 13a2 2 0 012-2h12a2 2 0 012 2v2a2 2 0 01-2 2H4a2 2 0 01-2-2v-2zm14 1a1 1 0 11-2 0 1 1 0 012 0z" clip-rule="evenodd"/></svg>Docker Ready</div>
-                <div class="flex items-center gap-2 text-xs text-muted/60 pulse-slow" style="animation-delay:1s"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M5.5 16a3.5 3.5 0 01-.369-6.98 4 4 0 117.753-1.977A4.5 4.5 0 1113.5 16h-8z"/></svg>Kubernetes</div>
-                <div class="flex items-center gap-2 text-xs text-muted/60 pulse-slow" style="animation-delay:1.5s"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 1.944A11.954 11.954 0 012.166 5C2.056 5.649 2 6.319 2 7c0 5.225 3.34 9.67 8 11.317C14.66 16.67 18 12.225 18 7c0-.682-.057-1.35-.166-2.001A11.954 11.954 0 0110 1.944zM11 14a1 1 0 11-2 0 1 1 0 012 0zm0-7a1 1 0 10-2 0v3a1 1 0 102 0V7z" clip-rule="evenodd"/></svg>SOC 2 Compliant</div>
-            </div>
-        </div>
-    </section>
-
-    <!-- ===== AGENT PIPELINE ===== -->
-    <section id="product" class="relative py-24 bg-surface">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <p class="text-accent text-sm font-semibold tracking-wide uppercase mb-3">Architecture</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Meet Your AI Team</h2>
-                <p class="text-muted max-w-xl mx-auto">Six specialized agents coordinate autonomously to handle your entire development lifecycle.</p>
-            </div>
-            <div class="hidden lg:block relative reveal">
-                <div class="relative mx-auto" style="max-width:1100px;">
-                    <svg class="absolute top-1/2 left-0 w-full" height="4" style="transform:translateY(-50%);z-index:0;"><line x1="90" y1="2" x2="1010" y2="2" class="pipeline-arrow" stroke="#3B82F6" stroke-width="2" fill="none"/></svg>
-                    <div class="absolute top-1/2 left-0 w-full" style="transform:translateY(-50%);z-index:1;pointer-events:none;"><div class="traveling-dot absolute w-3 h-3 bg-accent rounded-full shadow-lg shadow-accent/50" style="top:-5px;"></div></div>
-                    <div class="relative z-10 grid grid-cols-6 gap-4">
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-accent/10 flex items-center justify-center"><svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white mb-1">CodeAgent</h3><p class="text-xs text-muted leading-relaxed">Code generation, refactoring, bug fixes</p><div class="agent-details text-left mt-2 border-t border-border"><ul class="text-xs text-muted space-y-1 pt-2"><li>API development (REST, GraphQL)</li><li>Database integration</li><li>Frontend & backend services</li><li>Algorithm implementation</li><li>Performance optimization</li></ul></div></div></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-green-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white mb-1">TestAgent</h3><p class="text-xs text-muted leading-relaxed">Unit, integration & e2e testing</p><div class="agent-details text-left mt-2 border-t border-border"><ul class="text-xs text-muted space-y-1 pt-2"><li>Jest, PyTest, JUnit support</li><li>Code coverage analysis</li><li>Load & stress testing</li><li>CI/CD test integration</li></ul></div></div></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-red-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white mb-1">SecurityAgent</h3><p class="text-xs text-muted leading-relaxed">Vulnerability scanning & audits</p><div class="agent-details text-left mt-2 border-t border-border"><ul class="text-xs text-muted space-y-1 pt-2"><li>OWASP Top 10 analysis</li><li>Auth & encryption review</li><li>SQL injection prevention</li><li>Compliance validation</li></ul></div></div></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-purple-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58m-.119-8.54a6 6 0 00-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 00-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 01-2.448-2.448 14.9 14.9 0 01.06-.312m-2.24 2.39a4.493 4.493 0 00-1.757 4.306 4.493 4.493 0 004.306-1.758M16.5 9a1.5 1.5 0 11-3 0 1.5 1.5 0 013 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white mb-1">DeployAgent</h3><p class="text-xs text-muted leading-relaxed">Deployment & infrastructure</p><div class="agent-details text-left mt-2 border-t border-border"><ul class="text-xs text-muted space-y-1 pt-2"><li>Docker containerization</li><li>Kubernetes orchestration</li><li>AWS/Azure/GCP deploy</li><li>Database migration</li></ul></div></div></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-amber-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white mb-1">AnalysisAgent</h3><p class="text-xs text-muted leading-relaxed">Performance & code review</p><div class="agent-details text-left mt-2 border-t border-border"><ul class="text-xs text-muted space-y-1 pt-2"><li>Query optimization</li><li>Memory usage analysis</li><li>API response profiling</li><li>Scalability assessment</li></ul></div></div></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-3 rounded-lg bg-cyan-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white mb-1">DocsAgent</h3><p class="text-xs text-muted leading-relaxed">Documentation & API guides</p><div class="agent-details text-left mt-2 border-t border-border"><ul class="text-xs text-muted space-y-1 pt-2"><li>OpenAPI/Swagger specs</li><li>Markdown documentation</li><li>Interactive tutorials</li><li>Deployment guides</li></ul></div></div></div>
-                    </div>
+    <section class="relative pt-32 pb-20 overflow-hidden dot-grid">
+        <div class="hero-gradient" style="top:-200px;left:-100px;"></div>
+        <div class="hero-gradient" style="bottom:-200px;right:-100px;"></div>
+        <div class="container relative z-10">
+            <div class="max-w-3xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-card border border-border text-sm text-muted mb-6">
+                    <span class="status-dot online"></span>
+                    Enterprise-Grade Multi-Agent AI Platform
                 </div>
-            </div>
-            <!-- Mobile Pipeline -->
-            <div class="lg:hidden relative reveal">
-                <div class="relative max-w-sm mx-auto">
-                    <div class="absolute left-1/2 top-0 bottom-0 w-px" style="transform:translateX(-50%);"><svg width="2" height="100%" class="overflow-visible"><line x1="1" y1="0" x2="1" y2="100%" class="pipeline-arrow" stroke="#3B82F6" stroke-width="2" fill="none"/></svg></div>
-                    <div class="relative z-10 space-y-4">
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-accent/10 flex items-center justify-center"><svg class="w-5 h-5 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white">CodeAgent</h3><p class="text-xs text-muted">Code generation & bug fixes</p><div class="agent-details text-left mt-2 border-t border-border"><ul class="text-xs text-muted space-y-1 pt-2"><li>API development</li><li>Database integration</li><li>Frontend & backend</li></ul></div></div></div>
-                        <div class="flex justify-center"><svg width="20" height="20" class="text-accent"><path d="M10 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-green-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white">TestAgent</h3><p class="text-xs text-muted">Testing & coverage</p></div></div>
-                        <div class="flex justify-center"><svg width="20" height="20" class="text-accent"><path d="M10 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-red-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-red-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white">SecurityAgent</h3><p class="text-xs text-muted">Vulnerability scanning</p></div></div>
-                        <div class="flex justify-center"><svg width="20" height="20" class="text-accent"><path d="M10 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-purple-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15.59 14.37a6 6 0 01-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 006.16-12.12A14.98 14.98 0 009.631 8.41m5.96 5.96a14.926 14.926 0 01-5.841 2.58" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white">DeployAgent</h3><p class="text-xs text-muted">Deployment & infra</p></div></div>
-                        <div class="flex justify-center"><svg width="20" height="20" class="text-accent"><path d="M10 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-amber-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white">AnalysisAgent</h3><p class="text-xs text-muted">Performance review</p></div></div>
-                        <div class="flex justify-center"><svg width="20" height="20" class="text-accent"><path d="M10 4v12m0 0l-4-4m4 4l4-4" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                        <div class="agent-card cursor-pointer" onclick="toggleAgent(this)"><div class="bg-surface-card border border-border rounded-xl p-4 hover-lift text-center"><div class="w-10 h-10 mx-auto mb-2 rounded-lg bg-cyan-500/10 flex items-center justify-center"><svg class="w-5 h-5 text-cyan-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-sm font-semibold text-white">DocsAgent</h3><p class="text-xs text-muted">Documentation & guides</p></div></div>
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight mb-6">
+                    6 AI Agents. One Platform.<br>
+                    <span class="text-gradient">Zero Bottlenecks.</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-muted leading-relaxed mb-8 max-w-2xl mx-auto">
+                    PRP-AI automates your entire development workflow — from code generation to deployment — with 6 specialized AI agents working in concert.
+                </p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
+                    <a href="pricing.html" class="btn btn-primary btn-lg">
+                        Start Free Trial
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                    <a href="demo.html" class="btn btn-secondary btn-lg">
+                        Watch Demo
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    </a>
+                </div>
+
+                <!-- Pipeline Preview -->
+                <div class="pipeline-container reveal">
+                    <div class="pipeline-track">
+                        <div class="pipeline-line">
+                            <div class="pipeline-progress" style="width:0%"></div>
+                        </div>
+                        <div class="pipeline-node">
+                            <div class="pipeline-dot" style="border-color:var(--agent-analysis);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8B5CF6" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg></div>
+                            <span class="pipeline-label">Analysis</span>
+                        </div>
+                        <div class="pipeline-node">
+                            <div class="pipeline-dot" style="border-color:var(--agent-code);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3B82F6" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg></div>
+                            <span class="pipeline-label">Code</span>
+                        </div>
+                        <div class="pipeline-node">
+                            <div class="pipeline-dot" style="border-color:var(--agent-test);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg></div>
+                            <span class="pipeline-label">Test</span>
+                        </div>
+                        <div class="pipeline-node">
+                            <div class="pipeline-dot" style="border-color:var(--agent-security);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg></div>
+                            <span class="pipeline-label">Security</span>
+                        </div>
+                        <div class="pipeline-node">
+                            <div class="pipeline-dot" style="border-color:var(--agent-docs);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#06B6D4" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg></div>
+                            <span class="pipeline-label">Docs</span>
+                        </div>
+                        <div class="pipeline-node">
+                            <div class="pipeline-dot" style="border-color:var(--agent-deploy);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F97316" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg></div>
+                            <span class="pipeline-label">Deploy</span>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== FEATURES ===== -->
-    <section id="architecture" class="py-24 bg-surface-light">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <p class="text-accent text-sm font-semibold tracking-wide uppercase mb-3">Capabilities</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Built for Production Workloads</h2>
-                <p class="text-muted max-w-xl mx-auto">Every component designed for reliability, speed, and autonomous operation at scale.</p>
-            </div>
-            <div class="grid lg:grid-cols-2 gap-6 mb-6 reveal">
-                <div class="bg-surface-card border border-border rounded-2xl p-8 flex flex-col justify-center hover-lift">
-                    <div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5"><svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <h3 class="text-xl font-bold text-white mb-3">Parallel Execution</h3>
-                    <p class="text-muted leading-relaxed">Up to 10 concurrent operations. Agents work simultaneously, not sequentially. Tasks are distributed across the agent pool based on specialization and current load.</p>
+    <!-- ===== TRUST BAR ===== -->
+    <section class="border-y border-border bg-surface-light/50">
+        <div class="container">
+            <div class="trust-bar">
+                <div class="trust-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                    <span>6 AI Agents</span>
                 </div>
-                <div class="grid gap-4">
-                    <div class="bg-surface-card border border-border rounded-xl p-5 hover-lift"><div class="flex items-start gap-4"><div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3 7.5L7.5 3m0 0L12 7.5M7.5 3v13.5m13.5-3L16.5 18m0 0L12 13.5m4.5 4.5V4.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h4 class="text-sm font-semibold text-white mb-1">Auto-Scaling</h4><p class="text-xs text-muted">Dynamic agent allocation based on workload demand.</p></div></div></div>
-                    <div class="bg-surface-card border border-border rounded-xl p-5 hover-lift"><div class="flex items-start gap-4"><div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 3v17.25m0 0c-1.472 0-2.882.265-4.185.75M12 20.25c1.472 0 2.882.265 4.185.75" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h4 class="text-sm font-semibold text-white mb-1">Load Balancing</h4><p class="text-xs text-muted">Intelligent distribution of tasks across all available agents.</p></div></div></div>
-                    <div class="bg-surface-card border border-border rounded-xl p-5 hover-lift"><div class="flex items-start gap-4"><div class="w-9 h-9 rounded-lg bg-accent/10 flex items-center justify-center shrink-0"><svg class="w-4 h-4 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M3.75 12h16.5m-16.5 3.75h16.5M3.75 19.5h16.5M5.625 4.5h12.75a1.875 1.875 0 010 3.75H5.625a1.875 1.875 0 010-3.75z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><div><h4 class="text-sm font-semibold text-white mb-1">Queue Management</h4><p class="text-xs text-muted">Priority-based task queuing with dependency resolution.</p></div></div></div>
+                <div class="trust-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    <span>1,000+ Tasks/mo</span>
                 </div>
-            </div>
-            <div class="grid lg:grid-cols-2 gap-6 reveal">
-                <div class="bg-surface-card border border-border rounded-2xl p-8 flex flex-col justify-center hover-lift">
-                    <div class="w-12 h-12 rounded-xl bg-green-500/10 flex items-center justify-center mb-5"><svg class="w-6 h-6 text-green-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <h3 class="text-xl font-bold text-white mb-3">Self-Healing Recovery</h3>
-                    <p class="text-muted leading-relaxed">Automatic failure detection and recovery. No downtime, no manual intervention. The system monitors its own health and initiates corrective actions in real-time.</p>
+                <div class="trust-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    <span>Enterprise Ready</span>
                 </div>
-                <div class="bg-surface-card border border-border rounded-2xl p-8 flex flex-col justify-center hover-lift">
-                    <div class="w-12 h-12 rounded-xl bg-amber-500/10 flex items-center justify-center mb-5"><svg class="w-6 h-6 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2.25 18L9 11.25l4.306 4.307a11.95 11.95 0 015.814-5.519l2.74-1.22m0 0l-5.94-2.28m5.94 2.28l-2.28 5.941" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                    <h3 class="text-xl font-bold text-white mb-3">Predictive Intelligence</h3>
-                    <p class="text-muted leading-relaxed">AI learns from patterns to predict and prevent issues. Historical data and performance trends feed a continuous learning loop that improves agent coordination.</p>
+                <div class="trust-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/></svg>
+                    <span>API Access</span>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== COMPLIANCE ===== -->
-    <section id="security" class="py-24 bg-surface">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <p class="text-accent text-sm font-semibold tracking-wide uppercase mb-3">Compliance</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Enterprise Security Built In</h2>
-                <p class="text-muted max-w-xl mx-auto">Every layer designed with security as a first-class requirement.</p>
-            </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 reveal">
-                <div class="bg-surface-card border border-border rounded-2xl p-6 text-center hover-lift"><div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-accent/10 flex items-center justify-center"><svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-lg font-bold text-white mb-2">SOC 2 Type II</h3><p class="text-sm text-muted">Audited security controls with continuous monitoring.</p></div>
-                <div class="bg-surface-card border border-border rounded-2xl p-6 text-center hover-lift"><div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-accent/10 flex items-center justify-center"><svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-1.605.42-3.113 1.157-4.418" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-lg font-bold text-white mb-2">GDPR</h3><p class="text-sm text-muted">Full data residency and right-to-erasure support.</p></div>
-                <div class="bg-surface-card border border-border rounded-2xl p-6 text-center hover-lift"><div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-accent/10 flex items-center justify-center"><svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-lg font-bold text-white mb-2">OWASP Top 10</h3><p class="text-sm text-muted">Protected against all common vulnerabilities.</p></div>
-                <div class="bg-surface-card border border-border rounded-2xl p-6 text-center hover-lift"><div class="w-14 h-14 mx-auto mb-4 rounded-xl bg-accent/10 flex items-center justify-center"><svg class="w-7 h-7 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-lg font-bold text-white mb-2">12-Factor</h3><p class="text-sm text-muted">Cloud-native best practices throughout.</p></div>
+    <!-- ===== PROBLEM / SOLUTION ===== -->
+    <section class="section">
+        <div class="container">
+            <div class="grid md:grid-cols-2 gap-12 items-center reveal">
+                <div>
+                    <span class="section-label">The Problem</span>
+                    <h2 class="section-title">Your team spends 60% of time on repetitive tasks</h2>
+                    <p class="section-desc">Code reviews pile up. Tests get skipped. Security scans happen too late. Deployments break. Documentation goes stale. Your developers are stuck doing work machines should handle.</p>
+                    <div class="mt-6 space-y-3">
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            Manual code reviews taking 2-4 hours per PR
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            Test coverage dropping below 40%
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            Security vulnerabilities found in production
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#EF4444" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+                            Deployment failures blocking releases
+                        </div>
+                    </div>
+                </div>
+                <div>
+                    <span class="section-label">The Solution</span>
+                    <h2 class="section-title">PRP-AI handles it all, automatically</h2>
+                    <p class="section-desc">Code review, testing, security scanning, documentation, and deployment — orchestrated by 6 specialized AI agents that work together on every task.</p>
+                    <div class="mt-6 space-y-3">
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Automated code reviews in under 30 seconds
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Test generation achieving 90%+ coverage
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Continuous security scanning before deployment
+                        </div>
+                        <div class="flex items-center gap-3 text-sm text-muted">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            Zero-downtime deployments with rollback
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== DEPLOYMENT ===== -->
-    <section id="deploy" class="py-24 bg-surface-light">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <p class="text-accent text-sm font-semibold tracking-wide uppercase mb-3">Deployment</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Deploy Your Way</h2>
-                <p class="text-muted max-w-xl mx-auto">From a single Docker command to enterprise Kubernetes clusters.</p>
+    <!-- ===== AGENT SHOWCASE ===== -->
+    <section class="section bg-surface-light/30" id="agents">
+        <div class="container">
+            <div class="text-center mb-12 reveal">
+                <span class="section-label">Meet the Agents</span>
+                <h2 class="section-title">6 Specialized AI Agents</h2>
+                <p class="section-desc mx-auto">Each agent is purpose-built for a specific part of your development workflow, and they all coordinate seamlessly.</p>
             </div>
-            <div class="grid md:grid-cols-3 gap-6 reveal">
-                <div class="bg-surface-card border border-border rounded-2xl p-6 hover-lift"><div class="w-12 h-12 rounded-xl bg-surface-light flex items-center justify-center mb-5"><svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M5.25 14.25h13.5m-13.5 0a3 3 0 01-3-3m3 3a3 3 0 100 6h13.5a3 3 0 100-6m-16.5-3a3 3 0 013-3h13.5a3 3 0 013 3m-19.5 0a4.5 4.5 0 01.9-2.7L5.737 5.1a3.375 3.375 0 012.7-1.35h7.126c1.062 0 2.062.5 2.7 1.35l2.587 3.45a4.5 4.5 0 01.9 2.7" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-lg font-bold text-white mb-2">Self-Hosted</h3><div class="code-block mb-4"><span class="text-green-400">$</span> docker-compose up -d</div><p class="text-sm text-muted mb-6">Full control, your infrastructure. Deploy anywhere Docker runs.</p><a href="#" class="inline-flex items-center text-sm font-medium text-accent hover:text-accent-hover transition-colors">View Docker Guide<svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
-                <div class="bg-surface-card border-2 border-accent rounded-2xl p-6 hover-lift relative"><div class="absolute -top-3 left-1/2 -translate-x-1/2"><span class="inline-flex items-center px-3 py-1 rounded-full bg-accent text-white text-xs font-semibold">Recommended</span></div><div class="w-12 h-12 rounded-xl bg-accent/10 flex items-center justify-center mb-5"><svg class="w-6 h-6 text-accent" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2.25 15a4.5 4.5 0 004.5 4.5H18a3.75 3.75 0 001.332-7.257 3 3 0 00-3.758-3.848 5.25 5.25 0 00-10.233 2.33A4.502 4.502 0 002.25 15z" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-lg font-bold text-white mb-2">Managed Cloud</h3><p class="text-sm text-white/80 font-medium mb-4">We host and manage everything</p><p class="text-sm text-muted mb-6">99.9% SLA guaranteed. Zero infrastructure overhead.</p><a href="#contact" class="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors">Contact Sales</a></div>
-                <div class="bg-surface-card border border-border rounded-2xl p-6 hover-lift"><div class="w-12 h-12 rounded-xl bg-surface-light flex items-center justify-center mb-5"><svg class="w-6 h-6 text-muted" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 7.5l-9-5.25L3 7.5m18 0l-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3 class="text-lg font-bold text-white mb-2">Kubernetes</h3><div class="code-block mb-4"><span class="text-green-400">$</span> helm install prp-ai</div><p class="text-sm text-muted mb-6">Auto-scaling, zero downtime. Production-grade Helm charts.</p><a href="#" class="inline-flex items-center text-sm font-medium text-accent hover:text-accent-hover transition-colors">View Helm Chart<svg class="ml-1 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"/></svg></a></div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                <!-- CodeAgent -->
+                <div class="agent-card reveal reveal-delay-1" data-agent="code">
+                    <div class="agent-icon code">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 18l6-6-6-6M8 6l-6 6 6 6"/></svg>
+                    </div>
+                    <div class="agent-name">CodeAgent</div>
+                    <div class="agent-desc">Generates production-ready code, refactors existing implementations, and fixes bugs with deep context awareness.</div>
+                    <div class="agent-capabilities">
+                        <span class="agent-cap-tag">Code Generation</span>
+                        <span class="agent-cap-tag">Refactoring</span>
+                        <span class="agent-cap-tag">Bug Fixes</span>
+                        <span class="agent-cap-tag">API Development</span>
+                    </div>
+                </div>
+                <!-- TestAgent -->
+                <div class="agent-card reveal reveal-delay-2" data-agent="test">
+                    <div class="agent-icon test">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="agent-name">TestAgent</div>
+                    <div class="agent-desc">Creates comprehensive unit and integration tests, analyzes coverage gaps, and ensures code reliability.</div>
+                    <div class="agent-capabilities">
+                        <span class="agent-cap-tag">Unit Tests</span>
+                        <span class="agent-cap-tag">Integration Tests</span>
+                        <span class="agent-cap-tag">Coverage Analysis</span>
+                        <span class="agent-cap-tag">Mocking</span>
+                    </div>
+                </div>
+                <!-- SecurityAgent -->
+                <div class="agent-card reveal reveal-delay-3" data-agent="security">
+                    <div class="agent-icon security">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <div class="agent-name">SecurityAgent</div>
+                    <div class="agent-desc">Scans for vulnerabilities, performs security audits, and enforces best practices across your codebase.</div>
+                    <div class="agent-capabilities">
+                        <span class="agent-cap-tag">Vulnerability Scanning</span>
+                        <span class="agent-cap-tag">Security Audits</span>
+                        <span class="agent-cap-tag">OWASP Compliance</span>
+                        <span class="agent-cap-tag">Threat Modeling</span>
+                    </div>
+                </div>
+                <!-- DeployAgent -->
+                <div class="agent-card reveal reveal-delay-1" data-agent="deploy">
+                    <div class="agent-icon deploy">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/></svg>
+                    </div>
+                    <div class="agent-name">DeployAgent</div>
+                    <div class="agent-desc">Manages deployments, configures infrastructure, and sets up CI/CD pipelines with zero-downtime releases.</div>
+                    <div class="agent-capabilities">
+                        <span class="agent-cap-tag">Deployment</span>
+                        <span class="agent-cap-tag">Infrastructure</span>
+                        <span class="agent-cap-tag">CI/CD</span>
+                        <span class="agent-cap-tag">Rollback</span>
+                    </div>
+                </div>
+                <!-- AnalysisAgent -->
+                <div class="agent-card reveal reveal-delay-2" data-agent="analysis">
+                    <div class="agent-icon analysis">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                    </div>
+                    <div class="agent-name">AnalysisAgent</div>
+                    <div class="agent-desc">Performs deep performance analysis, code reviews, and identifies optimization opportunities across your project.</div>
+                    <div class="agent-capabilities">
+                        <span class="agent-cap-tag">Performance</span>
+                        <span class="agent-cap-tag">Code Review</span>
+                        <span class="agent-cap-tag">Optimization</span>
+                        <span class="agent-cap-tag">Metrics</span>
+                    </div>
+                </div>
+                <!-- DocsAgent -->
+                <div class="agent-card reveal reveal-delay-3" data-agent="docs">
+                    <div class="agent-icon docs">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <div class="agent-name">DocsAgent</div>
+                    <div class="agent-desc">Generates API documentation, user guides, README files, and keeps all documentation in sync with code changes.</div>
+                    <div class="agent-capabilities">
+                        <span class="agent-cap-tag">API Docs</span>
+                        <span class="agent-cap-tag">User Guides</span>
+                        <span class="agent-cap-tag">README</span>
+                        <span class="agent-cap-tag">OpenAPI Specs</span>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== INTERACTIVE DASHBOARD ===== -->
-    <section id="dashboard" class="py-24 bg-surface">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <p class="text-accent text-sm font-semibold tracking-wide uppercase mb-3">Live Dashboard</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">PRP-AI Dashboard</h2>
-                <p class="text-muted max-w-xl mx-auto">Full visibility into every agent, task, and system metric. Interactive and real-time.</p>
+    <!-- ===== ANIMATED DEMO PREVIEW ===== -->
+    <section class="section" id="demo-preview">
+        <div class="container">
+            <div class="text-center mb-12 reveal">
+                <span class="section-label">See It In Action</span>
+                <h2 class="section-title">Watch a Task Flow Through the Pipeline</h2>
+                <p class="section-desc mx-auto">Submit a task and watch all 6 agents coordinate to deliver a complete solution.</p>
             </div>
-
-            <div class="reveal">
-                <div class="bg-surface-card border border-border rounded-2xl overflow-hidden">
-                    <!-- Dashboard Header -->
-                    <div class="flex items-center justify-between px-6 py-3 border-b border-border bg-surface-light/50">
-                        <div class="flex items-center gap-3">
-                            <div class="flex gap-1.5"><div class="w-3 h-3 rounded-full bg-red-500/80"></div><div class="w-3 h-3 rounded-full bg-amber-500/80"></div><div class="w-3 h-3 rounded-full bg-green-500/80"></div></div>
-                            <span class="text-xs text-muted font-medium">PRP-AI Dashboard</span>
+            <div class="max-w-4xl mx-auto reveal">
+                <div class="dash-container">
+                    <div class="dash-header">
+                        <div class="dash-dots">
+                            <span style="background:#EF4444"></span>
+                            <span style="background:#F59E0B"></span>
+                            <span style="background:#22C55E"></span>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <div id="apiStatus" class="flex items-center gap-1.5"><span class="w-2 h-2 bg-muted/50 rounded-full"></span><span class="text-xs text-muted font-medium">Connecting...</span></div>
-                            <div class="flex items-center gap-2"><span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span><span class="text-xs text-green-400 font-medium">Live</span></div>
-                        </div>
+                        <span class="text-xs text-muted font-mono">PRP-AI Dashboard</span>
+                        <div></div>
                     </div>
-
-                    <!-- Metric Cards -->
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-px bg-border" id="dashMetrics">
-                        <div class="bg-surface-card p-6">
-                            <p class="text-xs text-muted font-medium uppercase tracking-wide mb-1">Tasks Processed</p>
-                            <p class="text-2xl sm:text-3xl font-bold text-white metric-value" data-target="12847" data-counter>0</p>
-                            <p class="text-xs text-green-400 mt-1 flex items-center gap-1"><svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" stroke-linecap="round" stroke-linejoin="round"/></svg>+18.2% this week</p>
-                        </div>
-                        <div class="bg-surface-card p-6">
-                            <p class="text-xs text-muted font-medium uppercase tracking-wide mb-1">Agents Active</p>
-                            <p class="text-2xl sm:text-3xl font-bold text-white metric-value flex items-center gap-2"><span id="activeAgentCount">6</span><span class="text-sm font-normal text-muted">/6</span><span class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></span></p>
-                            <p class="text-xs text-green-400 mt-1">All systems operational</p>
-                        </div>
-                        <div class="bg-surface-card p-6">
-                            <p class="text-xs text-muted font-medium uppercase tracking-wide mb-1">System Uptime</p>
-                            <p class="text-2xl sm:text-3xl font-bold text-white metric-value">99.97%</p>
-                            <div class="mt-2 h-1.5 rounded-full bg-surface-light overflow-hidden"><div class="h-full rounded-full bg-green-400" style="width:99.97%"></div></div>
-                        </div>
-                        <div class="bg-surface-card p-6">
-                            <p class="text-xs text-muted font-medium uppercase tracking-wide mb-1">Avg Response Time</p>
-                            <p class="text-2xl sm:text-3xl font-bold text-white metric-value flex items-center gap-2">1.2s<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 4.5l15 15m0 0V8.25m0 11.25H8.25" stroke-linecap="round" stroke-linejoin="round"/></svg></p>
-                            <p class="text-xs text-green-400 mt-1">-0.3s from last week</p>
-                        </div>
-                    </div>
-
-                    <!-- Agent Status Panel -->
-                    <div class="p-6 border-t border-border">
-                        <h4 class="text-sm font-semibold text-white mb-4">Agent Status</h4>
-                        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-4" id="agentStatusGrid">
-                        </div>
-                    </div>
-
-                    <!-- Task Queue -->
-                    <div class="p-6 border-t border-border">
-                        <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-sm font-semibold text-white">Task Queue</h4>
-                            <button id="newTaskBtn" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4.5v15m7.5-7.5h-15" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                New Task
-                            </button>
-                        </div>
-                        <div class="space-y-2 max-h-96 overflow-y-auto pr-1" id="taskQueue" style="scrollbar-width:thin;scrollbar-color:#334155 #0f172a;"></div>
-                    </div>
-
-                    <!-- Performance Chart -->
-                    <div class="p-6 border-t border-border">
-                        <div class="flex items-center justify-between mb-4">
-                            <h4 class="text-sm font-semibold text-white">Tasks Processed per Hour</h4>
-                            <div class="flex items-center gap-4">
-                                <span class="flex items-center gap-1.5 text-xs text-muted"><span class="w-3 h-0.5 bg-accent rounded"></span>Submitted</span>
-                                <span class="flex items-center gap-1.5 text-xs text-muted"><span class="w-3 h-0.5 bg-sky-300 rounded"></span>Completed</span>
+                    <div class="dash-body">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                            <div class="dash-metric">
+                                <div class="dash-metric-value" id="dash-task-count" data-count="847" data-suffix="">847</div>
+                                <div class="dash-metric-label">Tasks Completed</div>
+                            </div>
+                            <div class="dash-metric">
+                                <div class="dash-metric-value" id="dash-success-rate">97.2%</div>
+                                <div class="dash-metric-label">Success Rate</div>
+                            </div>
+                            <div class="dash-metric">
+                                <div class="dash-metric-value">6/6</div>
+                                <div class="dash-metric-label">Agents Active</div>
+                            </div>
+                            <div class="dash-metric">
+                                <div class="dash-metric-value">28s</div>
+                                <div class="dash-metric-label">Avg. Response</div>
                             </div>
                         </div>
-                        <div class="relative" id="chartContainer">
-                            <svg id="perfChart" viewBox="0 0 800 220" class="w-full" preserveAspectRatio="none"></svg>
-                            <div id="chartTooltip" class="absolute hidden bg-surface-light border border-border rounded-lg px-3 py-2 text-xs pointer-events-none z-10" style="transform:translate(-50%,-120%)"></div>
-                        </div>
+                        <div class="dash-log-panel" id="dash-log"></div>
                     </div>
+                </div>
+            </div>
+            <div class="text-center mt-8">
+                <a href="demo.html" class="btn btn-secondary">
+                    View Full Demo
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
 
-                    <!-- System Log -->
-                    <div class="p-6 border-t border-border">
-                        <h4 class="text-sm font-semibold text-white mb-4">System Log</h4>
-                        <div id="systemLog" class="dash-log-panel bg-[#0f172a] border border-border rounded-lg p-4 h-48 overflow-y-auto text-green-400/80" style="scrollbar-width:thin;scrollbar-color:#334155 #0f172a;"></div>
-                    </div>
+    <!-- ===== SOCIAL PROOF ===== -->
+    <section class="section-sm border-y border-border">
+        <div class="container">
+            <div class="text-center mb-8 reveal">
+                <span class="text-xs text-muted uppercase tracking-wider font-semibold">Built With</span>
+            </div>
+            <div class="flex flex-wrap items-center justify-center gap-8 text-muted reveal">
+                <div class="flex items-center gap-2 text-sm font-medium">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M14.25 2.26l-.08-.04-.01.02C13.46 2.09 12.74 2 12 2 6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10c0-4.75-3.31-8.72-7.75-9.74zM19.41 11H16.7c-.15-2.65-.86-4.97-1.97-6.55A8.03 8.03 0 0119.41 11zM12 20c-1.68 0-3.22-2.94-3.48-7h6.96c-.26 4.06-1.8 7-3.48 7zM8.52 11c.26-4.06 1.8-7 3.48-7s3.22 2.94 3.48 7H8.52zM9.27 4.45C8.16 6.03 7.45 8.35 7.3 11H4.59a8.03 8.03 0 014.68-6.55zM4.59 13H7.3c.15 2.65.86 4.97 1.97 6.55A8.03 8.03 0 014.59 13zM14.73 19.55c1.11-1.58 1.82-3.9 1.97-6.55h2.71a8.03 8.03 0 01-4.68 6.55z"/></svg>
+                    Python
+                </div>
+                <div class="flex items-center gap-2 text-sm font-medium">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                    FastAPI
+                </div>
+                <div class="flex items-center gap-2 text-sm font-medium">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M13.98 11.08h2.12a.19.19 0 00.19-.19V9.4a.19.19 0 00-.19-.19h-2.12a.19.19 0 00-.19.19v1.49c0 .11.09.19.19.19zm0-3.56h2.12a.19.19 0 00.19-.19V5.84a.19.19 0 00-.19-.19h-2.12a.19.19 0 00-.19.19v1.49c0 .1.09.19.19.19zm3.68 0h2.12a.19.19 0 00.19-.19V5.84a.19.19 0 00-.19-.19h-2.12a.19.19 0 00-.19.19v1.49c0 .1.08.19.19.19zm0 3.56h2.12a.19.19 0 00.19-.19V9.4a.19.19 0 00-.19-.19h-2.12a.19.19 0 00-.19.19v1.49c0 .11.08.19.19.19zm0 3.57h2.12a.19.19 0 00.19-.19v-1.49a.19.19 0 00-.19-.19h-2.12a.19.19 0 00-.19.19v1.49c0 .1.08.19.19.19zM10.3 7.52h2.12a.19.19 0 00.19-.19V5.84a.19.19 0 00-.19-.19H10.3a.19.19 0 00-.19.19v1.49c0 .1.09.19.19.19zm0 3.56h2.12a.19.19 0 00.19-.19V9.4a.19.19 0 00-.19-.19H10.3a.19.19 0 00-.19.19v1.49c0 .11.09.19.19.19zM4 18.28a.19.19 0 00.19.19h15.62a.19.19 0 00.19-.19v-1.49a.19.19 0 00-.19-.19H4.19a.19.19 0 00-.19.19v1.49zm0-3.57a.19.19 0 00.19.19h15.62a.19.19 0 00.19-.19v-1.49a.19.19 0 00-.19-.19H4.19a.19.19 0 00-.19.19v1.49zm2.63-3.63h2.12a.19.19 0 00.19-.19V9.4a.19.19 0 00-.19-.19H6.63a.19.19 0 00-.19.19v1.49c0 .11.08.19.19.19zm0-3.56h2.12a.19.19 0 00.19-.19V5.84a.19.19 0 00-.19-.19H6.63a.19.19 0 00-.19.19v1.49c0 .1.08.19.19.19z"/></svg>
+                    Docker
+                </div>
+                <div class="flex items-center gap-2 text-sm font-medium">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                    Kubernetes
+                </div>
+                <div class="flex items-center gap-2 text-sm font-medium">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+                    GitHub
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== PAYMENT / PRICING ===== -->
-    <section id="pricing" class="py-24 bg-surface-light">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-16 reveal">
-                <p class="text-accent text-sm font-semibold tracking-wide uppercase mb-3">Pricing</p>
-                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Get PRP-AI for Your Organization</h2>
-                <p class="text-muted max-w-xl mx-auto">Transparent pricing designed to scale with your needs.</p>
+    <!-- ===== PRICING PREVIEW ===== -->
+    <section class="section" id="pricing">
+        <div class="container">
+            <div class="text-center mb-12 reveal">
+                <span class="section-label">Pricing</span>
+                <h2 class="section-title">Start Automating Today</h2>
+                <p class="section-desc mx-auto">14-day free trial on all plans. No credit card required.</p>
             </div>
-
-            <div class="grid md:grid-cols-3 gap-6 mb-16 reveal">
+            <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
                 <!-- Starter -->
-                <div class="bg-surface-card border border-border rounded-2xl p-8 hover-lift flex flex-col">
-                    <h3 class="text-lg font-bold text-white mb-1">Starter</h3>
-                    <div class="flex items-baseline gap-1 mb-4"><span class="text-4xl font-extrabold text-white">$299</span><span class="text-muted text-sm">/mo</span></div>
-                    <ul class="space-y-3 text-sm text-muted mb-8 flex-1">
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>3 AI Agents</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>10,000 tasks/month</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Email support</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Dashboard access</li>
+                <div class="pricing-card reveal reveal-delay-1">
+                    <div class="pricing-tier">Starter</div>
+                    <div class="pricing-amount"><span class="currency">$</span>99<span class="period">/mo</span></div>
+                    <div class="pricing-annual-price">$950/yr (save 20%)</div>
+                    <ul class="pricing-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>2 Agents (Code + Test)</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>100 tasks/month</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Basic dashboard</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Community support</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Single project</li>
                     </ul>
-                    <a href="#payment-methods" class="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold text-white border border-border hover:border-accent rounded-lg transition-colors">Get Started</a>
+                    <a href="pricing.html" class="btn btn-secondary w-full">Get Started</a>
                 </div>
                 <!-- Professional -->
-                <div class="bg-surface-card border-2 border-accent rounded-2xl p-8 hover-lift flex flex-col relative">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2"><span class="inline-flex items-center px-3 py-1 rounded-full bg-accent text-white text-xs font-semibold">Most Popular</span></div>
-                    <h3 class="text-lg font-bold text-white mb-1">Professional</h3>
-                    <div class="flex items-baseline gap-1 mb-4"><span class="text-4xl font-extrabold text-white">$799</span><span class="text-muted text-sm">/mo</span></div>
-                    <ul class="space-y-3 text-sm text-muted mb-8 flex-1">
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>6 AI Agents</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>50,000 tasks/month</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Priority support</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Advanced analytics</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Custom integrations</li>
+                <div class="pricing-card popular reveal reveal-delay-2">
+                    <div class="pricing-tier">Professional</div>
+                    <div class="pricing-amount"><span class="currency">$</span>299<span class="period">/mo</span></div>
+                    <div class="pricing-annual-price">$2,870/yr (save 20%)</div>
+                    <ul class="pricing-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>All 6 agents</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>1,000 tasks/month</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Full dashboard + analytics</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Priority support</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>10 projects</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>API access</li>
                     </ul>
-                    <a href="#payment-methods" class="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors">Get Started</a>
+                    <a href="pricing.html" class="btn btn-primary w-full">Start Free Trial</a>
                 </div>
                 <!-- Enterprise -->
-                <div class="bg-surface-card border border-border rounded-2xl p-8 hover-lift flex flex-col">
-                    <h3 class="text-lg font-bold text-white mb-1">Enterprise</h3>
-                    <div class="flex items-baseline gap-1 mb-4"><span class="text-4xl font-extrabold text-white">Custom</span></div>
-                    <ul class="space-y-3 text-sm text-muted mb-8 flex-1">
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited agents</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Unlimited tasks</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated infrastructure</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>99.99% SLA</li>
-                        <li class="flex items-center gap-2"><svg class="w-4 h-4 text-accent shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Dedicated account manager</li>
+                <div class="pricing-card reveal reveal-delay-3">
+                    <div class="pricing-tier">Enterprise</div>
+                    <div class="pricing-amount"><span class="currency">$</span>799<span class="period">/mo</span></div>
+                    <div class="pricing-annual-price">$7,670/yr (save 20%)</div>
+                    <ul class="pricing-features">
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>All 6 agents</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Unlimited tasks</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Custom agents</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>Dedicated support</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>SSO/SAML + SLA</li>
+                        <li><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" class="check"><polyline points="20 6 9 17 4 12"/></svg>On-premise option</li>
                     </ul>
-                    <a href="mailto:elvizekaj@zedigital.tech" class="inline-flex items-center justify-center w-full px-4 py-2.5 text-sm font-semibold text-white border border-border hover:border-accent rounded-lg transition-colors">Contact Sales</a>
-                </div>
-            </div>
-
-            <!-- Payment Methods -->
-            <div id="payment-methods" class="reveal">
-                <div class="bg-surface-card border border-border rounded-2xl p-8 max-w-2xl mx-auto">
-                    <h3 class="text-xl font-bold text-white text-center mb-6">Payment Methods</h3>
-                    <div class="space-y-4">
-                        <a href="https://paypal.me/zelvi999" target="_blank" rel="noopener" class="flex items-center gap-4 p-4 bg-surface border border-border rounded-xl hover:border-accent transition-colors group">
-                            <div class="w-10 h-10 rounded-lg bg-blue-600/10 flex items-center justify-center shrink-0"><svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M7.076 21.337H2.47a.641.641 0 01-.633-.74L4.944 2.56A.77.77 0 015.7 1.9h6.486c2.157 0 3.79.588 4.851 1.748.467.51.784 1.093.945 1.734.168.668.164 1.467-.012 2.378l-.012.063v.555l.434.244a3.58 3.58 0 011.16 1.01c.326.43.548.95.66 1.543.116.611.113 1.33-.007 2.135-.138.926-.399 1.733-.775 2.396a4.84 4.84 0 01-1.268 1.542 5.083 5.083 0 01-1.774.903c-.67.213-1.438.32-2.282.32H13.18a.947.947 0 00-.936.803l-.04.218-.661 4.183-.032.157a.947.947 0 01-.935.802z"/></svg></div>
-                            <div class="flex-1"><p class="text-sm font-semibold text-white group-hover:text-accent transition-colors">PayPal</p><p class="text-xs text-muted">paypal.me/zelvi999</p></div>
-                            <svg class="w-4 h-4 text-muted group-hover:text-accent transition-colors" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                        </a>
-                        <div class="bg-surface border border-border rounded-xl overflow-hidden">
-                            <button onclick="document.getElementById('ibanDetails').classList.toggle('open')" class="flex items-center gap-4 p-4 w-full text-left hover:bg-surface-light/30 transition-colors group">
-                                <div class="w-10 h-10 rounded-lg bg-purple-600/10 flex items-center justify-center shrink-0"><svg class="w-5 h-5 text-purple-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 21v-8.25M15.75 21v-8.25M8.25 21v-8.25M3 9l9-6 9 6m-1.5 12V10.332A48.36 48.36 0 0012 9.75c-2.551 0-5.056.2-7.5.582V21M3 21h18M12 6.75h.008v.008H12V6.75z" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                                <div class="flex-1"><p class="text-sm font-semibold text-white group-hover:text-accent transition-colors">Bank Transfer</p><p class="text-xs text-muted">Click to view IBAN details</p></div>
-                                <svg class="w-4 h-4 text-muted transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M19.5 8.25l-7.5 7.5-7.5-7.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            </button>
-                            <div id="ibanDetails" class="iban-details">
-                                <div class="px-4 pb-4 space-y-2 border-t border-border pt-3">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <p class="text-xs text-muted mb-1">IBAN</p>
-                                            <p class="text-sm text-white font-mono">AL-C0100002334708</p>
-                                        </div>
-                                        <button onclick="navigator.clipboard.writeText('AL-C0100002334708');this.textContent='Copied!';setTimeout(()=>this.textContent='Copy',2000)" class="text-xs text-accent hover:text-white transition-colors px-3 py-1.5 rounded-lg border border-border hover:border-accent flex-shrink-0">Copy</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="bg-surface border border-border rounded-xl p-4">
-                            <div class="flex items-center gap-4 mb-3">
-                                <div class="w-10 h-10 rounded-lg bg-amber-600/10 flex items-center justify-center shrink-0"><svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-                                <div><p class="text-sm font-semibold text-white">Crypto</p></div>
-                            </div>
-                            <div class="space-y-2 pl-14">
-                                <div><p class="text-xs text-muted mb-0.5">BTC (BSC)</p><p class="text-xs text-white font-mono break-all select-all">0x65ec5fcc684d1978cddaed29032aaeffc6248a84</p></div>
-                                <div><p class="text-xs text-muted mb-0.5">ETH (BSC)</p><p class="text-xs text-white font-mono break-all select-all">0x65ec5fcc684d1978cddaed29032aaeffc6248a84</p></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-6 pt-6 border-t border-border text-center">
-                        <p class="text-sm text-muted">Questions? <a href="mailto:elvizekaj@zedigital.tech" class="text-accent hover:text-accent-hover transition-colors">elvizekaj@zedigital.tech</a></p>
-                    </div>
+                    <a href="pricing.html" class="btn btn-secondary w-full">Contact Sales</a>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- ===== CONTACT CTA ===== -->
-    <section id="contact" class="py-24 relative overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-br from-surface via-surface to-accent/5"></div>
-        <div class="relative z-10 max-w-xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-10 reveal"><h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Ready for Enterprise AI?</h2><p class="text-muted">Get started with a personalized demo from our engineering team.</p></div>
-            <div class="reveal">
-                <div class="bg-surface-card border border-border rounded-2xl p-8">
-                    <div class="space-y-4">
-                        <div><label class="block text-xs font-medium text-muted mb-1.5">Company Name</label><input type="text" placeholder="Acme Corp" class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm placeholder-muted/50 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors" disabled></div>
-                        <div><label class="block text-xs font-medium text-muted mb-1.5">Work Email</label><input type="email" placeholder="you@company.com" class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm placeholder-muted/50 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors" disabled></div>
-                        <div><label class="block text-xs font-medium text-muted mb-1.5">Team Size</label><select class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-muted/50 text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors appearance-none" disabled><option>Select team size</option></select></div>
-                        <a href="#" class="inline-flex items-center justify-center w-full px-6 py-3 text-sm font-semibold text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors mt-2">Request Demo<svg class="ml-2 w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+    <!-- ===== FAQ PREVIEW ===== -->
+    <section class="section bg-surface-light/30" id="faq">
+        <div class="container">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-12 reveal">
+                    <span class="section-label">FAQ</span>
+                    <h2 class="section-title">Common Questions</h2>
+                </div>
+                <div class="reveal">
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            What is PRP-AI Assistant?
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div class="faq-answer"><p>PRP-AI Assistant is an enterprise-grade autonomous multi-agent AI platform. It uses 6 specialized AI agents — CodeAgent, TestAgent, SecurityAgent, DeployAgent, AnalysisAgent, and DocsAgent — that work together to automate your entire development workflow from code generation to production deployment.</p></div>
                     </div>
-                    <p class="text-center text-xs text-muted mt-4">No credit card required. 14-day free trial available.</p>
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            How does the multi-agent coordination work?
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div class="faq-answer"><p>When you submit a task, PRP-AI intelligently routes it through the relevant agents. For example, a feature request goes through AnalysisAgent (architecture review), CodeAgent (implementation), TestAgent (test generation), SecurityAgent (vulnerability scan), DocsAgent (documentation), and DeployAgent (deployment). Each agent builds on the output of the previous one.</p></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Is there a free trial?
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div class="faq-answer"><p>Yes. All plans include a 14-day free trial with full access to the features of your chosen tier. No credit card is required to start your trial.</p></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            Can I self-host PRP-AI?
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div class="faq-answer"><p>Yes. The Enterprise plan includes an on-premise deployment option. PRP-AI is containerized with Docker and supports Kubernetes orchestration, making it straightforward to deploy within your own infrastructure.</p></div>
+                    </div>
+                    <div class="faq-item">
+                        <button class="faq-question">
+                            What integrations are supported?
+                            <svg class="faq-chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+                        </button>
+                        <div class="faq-answer"><p>PRP-AI integrates with GitHub, GitLab, Docker, Kubernetes, Slack, and more. The Professional and Enterprise plans include full API access for custom integrations with your existing tools and workflows.</p></div>
+                    </div>
+                </div>
+                <div class="text-center mt-8">
+                    <a href="faq.html" class="btn btn-ghost">
+                        View all questions
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FINAL CTA ===== -->
+    <section class="section relative overflow-hidden">
+        <div class="absolute inset-0 dot-grid opacity-30"></div>
+        <div class="container relative z-10">
+            <div class="max-w-2xl mx-auto text-center reveal">
+                <h2 class="text-3xl sm:text-4xl font-black text-white mb-4">Transform Your Development Workflow</h2>
+                <p class="text-lg text-muted mb-8">Join teams that ship faster, more securely, and with better documentation — all powered by 6 AI agents working for you.</p>
+                <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                    <a href="pricing.html" class="btn btn-primary btn-lg">
+                        Start Your Free Trial
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                    <a href="mailto:elvizekaj@zedigital.tech" class="btn btn-secondary btn-lg">Contact Sales</a>
                 </div>
             </div>
         </div>
     </section>
 
     <!-- ===== FOOTER ===== -->
-    <footer class="border-t border-border py-12 bg-surface">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col sm:flex-row items-center justify-between gap-6">
-                <div class="flex items-center gap-2"><svg width="20" height="20" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg><span class="text-sm text-muted">Built by Z.E Digital Tech</span></div>
-                <div class="flex items-center gap-6">
-                    <a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank" rel="noopener" class="text-sm text-muted hover:text-white transition-colors flex items-center gap-1.5"><svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>GitHub</a>
-                    <a href="https://zedigital.tech" target="_blank" rel="noopener" class="text-sm text-muted hover:text-white transition-colors">Portfolio</a>
+    <footer class="site-footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <a href="index.html" class="nav-logo">
+                        <svg width="24" height="24" viewBox="0 0 28 28" fill="none"><rect width="28" height="28" rx="6" fill="#3B82F6"/><path d="M8 9h5a4 4 0 010 8H8V9z" fill="white" opacity="0.9"/><circle cx="19" cy="13" r="2.5" fill="white" opacity="0.6"/></svg>
+                        <span>PRP-AI</span>
+                    </a>
+                    <p>Enterprise-grade autonomous multi-agent AI platform by ZeDigital. Automate your development workflow with 6 specialized AI agents.</p>
                 </div>
+                <div>
+                    <div class="footer-heading">Product</div>
+                    <ul class="footer-links">
+                        <li><a href="features.html">Features</a></li>
+                        <li><a href="demo.html">Demo</a></li>
+                        <li><a href="pricing.html">Pricing</a></li>
+                        <li><a href="faq.html">FAQ</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-heading">Resources</div>
+                    <ul class="footer-links">
+                        <li><a href="https://github.com/ezekaj/prp-ai-assistant" target="_blank">GitHub</a></li>
+                        <li><a href="https://zedigital-prp-ai.fly.dev" target="_blank">API</a></li>
+                        <li><a href="mailto:elvizekaj@zedigital.tech">Contact</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <div class="footer-heading">Legal</div>
+                    <ul class="footer-links">
+                        <li><a href="terms.html">Terms of Service</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <span>2025 ZeDigital. All rights reserved.</span>
+                <a href="mailto:elvizekaj@zedigital.tech">elvizekaj@zedigital.tech</a>
             </div>
         </div>
     </footer>
 
-    <!-- New Task Modal -->
-    <div id="taskModal" class="modal-overlay">
-        <div class="bg-surface-card border border-border rounded-2xl p-6 w-full max-w-md mx-4">
-            <div class="flex items-center justify-between mb-6">
-                <h3 class="text-lg font-bold text-white">New Task</h3>
-                <button onclick="closeTaskModal()" class="text-muted hover:text-white"><svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-            </div>
-            <div class="space-y-4">
-                <div><label class="block text-xs font-medium text-muted mb-1.5">Task Description</label><input id="taskDescInput" type="text" placeholder="Describe the task..." class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm placeholder-muted/50 focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"></div>
-                <div><label class="block text-xs font-medium text-muted mb-1.5">Priority</label><select id="taskPriorityInput" class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"><option value="Low">Low</option><option value="Medium" selected>Medium</option><option value="High">High</option><option value="Critical">Critical</option></select></div>
-                <div><label class="block text-xs font-medium text-muted mb-1.5">Agent Assignment</label><select id="taskAgentInput" class="w-full px-4 py-2.5 bg-surface border border-border rounded-lg text-white text-sm focus:outline-none focus:border-accent focus:ring-1 focus:ring-accent transition-colors"><option value="Auto">Auto-assign</option><option value="Code Agent">CodeAgent</option><option value="Analysis Agent">AnalysisAgent</option><option value="Writing Agent">DocsAgent</option><option value="Review Agent">SecurityAgent</option><option value="Deploy Agent">DeployAgent</option><option value="Research Agent">TestAgent</option></select></div>
-                <button onclick="submitNewTask()" class="w-full px-4 py-2.5 text-sm font-semibold text-white bg-accent hover:bg-accent-hover rounded-lg transition-colors">Submit Task</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- ===== JAVASCRIPT ===== -->
-    <script>
-    (function() {
-        // ========== API CONFIGURATION ==========
-        const API_BASE = 'https://zedigital-prp-ai.fly.dev';
-        let apiConnected = false;
-
-        async function apiFetch(path, options = {}) {
-            try {
-                const res = await fetch(API_BASE + path, {
-                    ...options,
-                    headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
-                });
-                if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                return await res.json();
-            } catch (e) {
-                return null;
-            }
-        }
-
-        function setApiStatus(connected) {
-            apiConnected = connected;
-            const el = document.getElementById('apiStatus');
-            if (!el) return;
-            if (connected) {
-                el.innerHTML = '<span class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span><span class="text-xs text-green-400 font-medium">API Connected</span>';
-            } else {
-                el.innerHTML = '<span class="w-2 h-2 bg-amber-400 rounded-full"></span><span class="text-xs text-amber-400 font-medium">Simulation</span>';
-            }
-        }
-
-        // Mobile menu
-        const hamburgerBtn = document.getElementById('hamburgerBtn');
-        const mobileMenu = document.getElementById('mobileMenu');
-        hamburgerBtn.addEventListener('click', () => mobileMenu.classList.toggle('open'));
-        mobileMenu.querySelectorAll('a').forEach(l => l.addEventListener('click', () => mobileMenu.classList.remove('open')));
-
-        // Agent pipeline expand
-        window.toggleAgent = function(card) {
-            const d = card.querySelector('.agent-details');
-            if (!d) return;
-            const was = d.classList.contains('expanded');
-            document.querySelectorAll('.agent-details').forEach(x => x.classList.remove('expanded'));
-            if (!was) d.classList.add('expanded');
-        };
-
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(a => {
-            a.addEventListener('click', function(e) {
-                const h = this.getAttribute('href');
-                if (h === '#') return;
-                e.preventDefault();
-                const t = document.querySelector(h);
-                if (t) window.scrollTo({ top: t.getBoundingClientRect().top + window.pageYOffset - 80, behavior: 'smooth' });
-            });
-        });
-
-        // Scroll reveal
-        const ro = new IntersectionObserver(entries => entries.forEach(en => { if (en.isIntersecting) en.target.classList.add('visible'); }), { threshold: 0.1 });
-        document.querySelectorAll('.reveal').forEach(el => ro.observe(el));
-
-        // ========== DASHBOARD LOGIC ==========
-
-        // Counter animation
-        function animateCounter(el, target) {
-            const duration = 2000;
-            const start = performance.now();
-            function update(now) {
-                const p = Math.min((now - start) / duration, 1);
-                const eased = 1 - Math.pow(1 - p, 3);
-                el.textContent = Math.floor(eased * target).toLocaleString();
-                if (p < 1) requestAnimationFrame(update);
-            }
-            requestAnimationFrame(update);
-        }
-
-        const counterObserver = new IntersectionObserver(entries => {
-            entries.forEach(en => {
-                if (en.isIntersecting) {
-                    en.target.querySelectorAll('[data-counter]').forEach(el => {
-                        animateCounter(el, parseInt(el.dataset.target));
-                    });
-                    counterObserver.unobserve(en.target);
-                }
-            });
-        }, { threshold: 0.3 });
-        const dm = document.getElementById('dashMetrics');
-        if (dm) counterObserver.observe(dm);
-
-        // Agent color mapping for backend agents
-        const agentColorMap = {
-            'blue': 'accent', 'green': 'green-400', 'red': 'red-400',
-            'purple': 'purple-400', 'amber': 'amber-400', 'cyan': 'cyan-400'
-        };
-
-        // Agent status data (fallback)
-        let agents = [
-            { id: 'code-agent', name: 'CodeAgent', color: 'accent', tasks: 2341, avg: '3.2s', active: true },
-            { id: 'test-agent', name: 'TestAgent', color: 'green-400', tasks: 1987, avg: '2.8s', active: true },
-            { id: 'security-agent', name: 'SecurityAgent', color: 'red-400', tasks: 3102, avg: '4.1s', active: true },
-            { id: 'deploy-agent', name: 'DeployAgent', color: 'purple-400', tasks: 1456, avg: '2.1s', active: true },
-            { id: 'analysis-agent', name: 'AnalysisAgent', color: 'amber-400', tasks: 2891, avg: '1.9s', active: true },
-            { id: 'docs-agent', name: 'DocsAgent', color: 'cyan-400', tasks: 1070, avg: '5.3s', active: false },
-        ];
-
-        const logMessages = [
-            'Analyzing dataset for anomalies...',
-            'Generating comprehensive report...',
-            'Compiling source modules...',
-            'Running integration test suite...',
-            'Reviewing pull request #',
-            'Deploying build to staging...',
-            'Optimizing database queries...',
-            'Scanning for vulnerabilities...',
-            'Refactoring authentication module...',
-            'Updating API documentation...',
-            'Processing webhook events...',
-            'Indexing search data...',
-        ];
-
-        // Load agents from API
-        async function loadAgents() {
-            const data = await apiFetch('/api/agents');
-            if (data && data.agents) {
-                agents = data.agents.map(a => ({
-                    id: a.id,
-                    name: a.name,
-                    color: agentColorMap[a.color] || 'accent',
-                    tasks: a.tasks_completed || Math.floor(1000 + Math.random() * 3000),
-                    avg: a.avg_response_time ? a.avg_response_time.toFixed(1) + 's' : (1 + Math.random() * 4).toFixed(1) + 's',
-                    active: a.enabled,
-                }));
-                setApiStatus(true);
-                renderAgentCards();
-                addLogEntry('<span class="text-green-400">API connected</span> - Loading live agent data');
-            } else {
-                setApiStatus(false);
-                addLogEntry('<span class="text-amber-400">API unavailable</span> - Running in simulation mode');
-            }
-        }
-
-        // Load dashboard metrics from API
-        async function loadDashboard() {
-            const data = await apiFetch('/api/dashboard');
-            if (data) {
-                const counterEl = document.querySelector('[data-counter]');
-                if (counterEl) {
-                    const total = data.tasks_processed + (data.tasks_completed * 15);
-                    counterEl.dataset.target = total;
-                    animateCounter(counterEl, total);
-                }
-            }
-        }
-
-        function renderAgentCards() {
-            const grid = document.getElementById('agentStatusGrid');
-            grid.innerHTML = '';
-            let activeCount = 0;
-            agents.forEach((ag, i) => {
-                if (ag.active) activeCount++;
-                const status = ag.active ? 'Active' : 'Idle';
-                const statusColor = ag.active ? 'text-green-400' : 'text-amber-400';
-                const dotColor = ag.active ? 'bg-green-400' : 'bg-amber-400';
-                const sparkBars = Array.from({length: 12}, (_, j) =>
-                    `<span class="sparkline-bar" style="animation-delay:${j * 0.12}s;height:${ag.active ? (8 + Math.random()*12) : 4}px;opacity:${ag.active ? 1 : 0.3}"></span>`
-                ).join('');
-                const logs = Array.from({length: 5}, (_, j) => {
-                    const h = String(14 - j).padStart(2, '0');
-                    const m = String(Math.floor(Math.random()*60)).padStart(2, '0');
-                    const s = String(Math.floor(Math.random()*60)).padStart(2, '0');
-                    return `<div class="text-xs text-muted/70 font-mono">[${h}:${m}:${s}] ${logMessages[Math.floor(Math.random()*logMessages.length)].replace('#', '#' + (4500 + Math.floor(Math.random()*200)))}</div>`;
-                }).join('');
-
-                const card = document.createElement('div');
-                card.className = 'bg-surface border border-border rounded-xl p-4';
-                card.innerHTML = `
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="flex items-center gap-2">
-                            <span class="w-2 h-2 ${dotColor} rounded-full ${ag.active ? 'animate-pulse' : ''}"></span>
-                            <span class="text-sm font-semibold text-white">${ag.name}</span>
-                        </div>
-                        <div class="toggle-switch ${ag.active ? 'on' : 'off'}" data-agent="${i}" data-agent-id="${ag.id || ''}"></div>
-                    </div>
-                    <div class="flex items-center justify-between text-xs text-muted mb-2">
-                        <span>Status: <span class="${statusColor} font-medium">${status}</span></span>
-                        <span>Avg: ${ag.avg}</span>
-                    </div>
-                    <div class="flex items-center justify-between text-xs text-muted mb-3">
-                        <span>Tasks: <span class="text-white font-medium">${ag.tasks.toLocaleString()}</span></span>
-                        <div class="flex items-end h-5 gap-px">${sparkBars}</div>
-                    </div>
-                    <button class="text-xs text-accent hover:text-accent-hover transition-colors agent-log-toggle" data-log="agentLog${i}">View Logs</button>
-                    <div id="agentLog${i}" class="agent-log-details mt-2 space-y-1">${logs}</div>
-                `;
-                grid.appendChild(card);
-            });
-            document.getElementById('activeAgentCount').textContent = activeCount;
-            // Toggle switches - call real API when connected
-            grid.querySelectorAll('.toggle-switch').forEach(sw => {
-                sw.addEventListener('click', async function() {
-                    const idx = parseInt(this.dataset.agent);
-                    const agentId = this.dataset.agentId;
-                    if (apiConnected && agentId) {
-                        const result = await apiFetch(`/api/agents/${agentId}/toggle`, { method: 'POST' });
-                        if (result) {
-                            agents[idx].active = result.enabled;
-                            addLogEntry(`${result.name} ${result.enabled ? '<span class="text-green-400">enabled</span>' : '<span class="text-amber-400">disabled</span>'} via API`);
-                            renderAgentCards();
-                            return;
-                        }
-                    }
-                    agents[idx].active = !agents[idx].active;
-                    addLogEntry(`${agents[idx].name} ${agents[idx].active ? 'enabled' : 'disabled'}`);
-                    renderAgentCards();
-                });
-            });
-            // Log toggles
-            grid.querySelectorAll('.agent-log-toggle').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.getElementById(this.dataset.log).classList.toggle('open');
-                    this.textContent = document.getElementById(this.dataset.log).classList.contains('open') ? 'Hide Logs' : 'View Logs';
-                });
-            });
-        }
-        renderAgentCards();
-
-        // Task Queue
-        let taskData = [
-            { id: 4522, name: 'Generate quarterly report', agent: 'DocsAgent', status: 'Completed', progress: 100 },
-            { id: 4523, name: 'Analyze user behavior data', agent: 'AnalysisAgent', status: 'Completed', progress: 100 },
-            { id: 4524, name: 'Refactor auth middleware', agent: 'CodeAgent', status: 'Completed', progress: 100 },
-            { id: 4525, name: 'Security audit: payment module', agent: 'SecurityAgent', status: 'Processing', progress: 72 },
-            { id: 4526, name: 'Deploy v2.4.1 to staging', agent: 'DeployAgent', status: 'Processing', progress: 45 },
-            { id: 4527, name: 'Research competitor API features', agent: 'AnalysisAgent', status: 'Processing', progress: 23 },
-            { id: 4528, name: 'Write integration tests for orders', agent: 'TestAgent', status: 'Queued', progress: 0 },
-            { id: 4529, name: 'Optimize database indexing', agent: 'AnalysisAgent', status: 'Queued', progress: 0 },
-            { id: 4530, name: 'Generate API documentation', agent: 'DocsAgent', status: 'Queued', progress: 0 },
-            { id: 4531, name: 'Review PR #847: User dashboard', agent: 'CodeAgent', status: 'Queued', progress: 0 },
-        ];
-        let nextTaskId = 4532;
-
-        // Load tasks from API
-        async function loadTasks() {
-            const data = await apiFetch('/api/tasks');
-            if (data && data.tasks && data.tasks.length > 0) {
-                taskData = data.tasks.map((t, i) => {
-                    const statusMap = { completed: 'Completed', processing: 'Processing', queued: 'Queued' };
-                    const agentObj = agents.find(a => a.id === t.agent_id);
-                    return {
-                        id: 4522 + i,
-                        realId: t.id,
-                        name: t.title,
-                        agent: agentObj ? agentObj.name : t.agent_id,
-                        status: statusMap[t.status] || 'Queued',
-                        progress: t.progress,
-                        priority: t.priority ? t.priority.charAt(0).toUpperCase() + t.priority.slice(1) : undefined,
-                    };
-                });
-                nextTaskId = 4522 + taskData.length;
-                renderTasks();
-            }
-        }
-
-        function renderTasks() {
-            const container = document.getElementById('taskQueue');
-            container.innerHTML = '';
-            taskData.forEach(t => {
-                const statusColors = { Completed: 'text-green-400', Processing: 'text-accent', Queued: 'text-muted' };
-                const barColors = { Completed: 'bg-green-400', Processing: 'bg-accent processing', Queued: 'bg-muted/30' };
-                const priorityBadge = t.priority ? `<span class="text-[10px] px-1.5 py-0.5 rounded font-medium ${t.priority === 'Critical' ? 'bg-red-500/20 text-red-400' : t.priority === 'High' ? 'bg-amber-500/20 text-amber-400' : t.priority === 'Medium' ? 'bg-accent/20 text-accent' : 'bg-muted/20 text-muted'}">${t.priority}</span>` : '';
-                const check = t.status === 'Completed' ? '<svg class="w-4 h-4 text-green-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M4.5 12.75l6 6 9-13.5" stroke-linecap="round" stroke-linejoin="round"/></svg>' : '';
-                const row = document.createElement('div');
-                row.className = 'flex items-center gap-3 p-3 bg-surface border border-border rounded-lg';
-                row.innerHTML = `
-                    ${check}
-                    <div class="flex-1 min-w-0">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="text-xs font-medium text-white truncate">#${t.id} ${t.name}</span>
-                            ${priorityBadge}
-                        </div>
-                        <div class="flex items-center gap-3 text-[10px] text-muted">
-                            <span>${t.agent}</span>
-                            <span class="${statusColors[t.status] || 'text-muted'} font-medium">${t.status}</span>
-                        </div>
-                        <div class="task-progress-bar mt-1.5"><div class="task-progress-fill ${barColors[t.status] || 'bg-muted/30'}" style="width:${t.progress}%"></div></div>
-                    </div>
-                `;
-                container.appendChild(row);
-            });
-        }
-        renderTasks();
-
-        // Animate processing tasks
-        setInterval(() => {
-            taskData.forEach(t => {
-                if (t.status === 'Processing' && t.progress < 100) {
-                    t.progress = Math.min(100, t.progress + Math.random() * 3);
-                    if (t.progress >= 100) { t.status = 'Completed'; t.progress = 100; }
-                }
-            });
-            const processing = taskData.filter(t => t.status === 'Processing').length;
-            if (processing < 3) {
-                const next = taskData.find(t => t.status === 'Queued');
-                if (next) { next.status = 'Processing'; next.progress = Math.random() * 10; }
-            }
-            renderTasks();
-        }, 2000);
-
-        // New Task Modal
-        window.closeTaskModal = function() { document.getElementById('taskModal').classList.remove('open'); };
-        document.getElementById('newTaskBtn').addEventListener('click', () => document.getElementById('taskModal').classList.add('open'));
-        window.submitNewTask = async function() {
-            const desc = document.getElementById('taskDescInput').value.trim();
-            if (!desc) return;
-            const priority = document.getElementById('taskPriorityInput').value;
-            let agentSelect = document.getElementById('taskAgentInput').value;
-
-            // Map display names to API agent IDs
-            const agentNameToId = {
-                'Research Agent': 'analysis-agent', 'Analysis Agent': 'analysis-agent',
-                'Writing Agent': 'docs-agent', 'Code Agent': 'code-agent',
-                'Review Agent': 'security-agent', 'Deploy Agent': 'deploy-agent',
-            };
-            let agentId = agentSelect === 'Auto' ? 'auto' : (agentNameToId[agentSelect] || 'auto');
-
-            if (apiConnected) {
-                const result = await apiFetch('/api/tasks', {
-                    method: 'POST',
-                    body: JSON.stringify({ title: desc, priority: priority.toLowerCase(), agent_id: agentId }),
-                });
-                if (result) {
-                    const agentName = result.agent_name || agentSelect;
-                    taskData.push({ id: nextTaskId++, realId: result.id, name: desc, agent: agentName, status: 'Queued', progress: 0, priority });
-                    renderTasks();
-                    closeTaskModal();
-                    document.getElementById('taskDescInput').value = '';
-                    addLogEntry(`<span class="text-green-400">API:</span> Task created - "${desc}" assigned to ${agentName}`);
-                    setTimeout(() => {
-                        const t = taskData.find(x => x.id === nextTaskId - 1);
-                        if (t && t.status === 'Queued') { t.status = 'Processing'; t.progress = 5; renderTasks(); addLogEntry(`${agentName} started processing task #${t.id}`); }
-                    }, 2000);
-                    return;
-                }
-            }
-
-            // Fallback to local simulation
-            let agent = agentSelect;
-            if (agent === 'Auto') {
-                const activeAgents = agents.filter(a => a.active);
-                agent = activeAgents.length > 0 ? activeAgents[Math.floor(Math.random() * activeAgents.length)].name : 'CodeAgent';
-            }
-            taskData.push({ id: nextTaskId++, name: desc, agent, status: 'Queued', progress: 0, priority });
-            renderTasks();
-            closeTaskModal();
-            document.getElementById('taskDescInput').value = '';
-            addLogEntry(`New task #${nextTaskId - 1} created: "${desc}" assigned to ${agent}`);
-            setTimeout(() => {
-                const t = taskData.find(x => x.id === nextTaskId - 1);
-                if (t && t.status === 'Queued') { t.status = 'Processing'; t.progress = 5; renderTasks(); addLogEntry(`${agent} started processing task #${t.id}`); }
-            }, 2000);
-        };
-
-        // Performance Chart
-        let submitted = [32,28,22,18,15,12,14,20,35,48,62,70,75,72,68,65,70,74,80,78,72,65,55,42];
-        let completed = [30,26,20,16,13,10,12,18,32,44,58,65,70,68,64,62,66,70,76,74,68,60,50,38];
-
-        // Load metrics from API for chart
-        async function loadMetrics() {
-            const data = await apiFetch('/api/metrics?hours=24');
-            if (data && data.data_points && data.data_points.length > 0) {
-                submitted = data.data_points.map(d => d.tasks_submitted);
-                completed = data.data_points.map(d => d.tasks_completed);
-                buildChart();
-                addLogEntry('<span class="text-green-400">API:</span> Real-time metrics loaded for chart');
-            }
-        }
-
-        function buildChart() {
-            const svg = document.getElementById('perfChart');
-            const w = 800, h = 200, pad = 40;
-            const maxVal = Math.max(85, Math.max(...submitted, ...completed) + 10);
-            let html = `<defs><linearGradient id="cg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3B82F6" stop-opacity="0.2"/><stop offset="100%" stop-color="#3B82F6" stop-opacity="0"/></linearGradient><linearGradient id="cg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#7dd3fc" stop-opacity="0.15"/><stop offset="100%" stop-color="#7dd3fc" stop-opacity="0"/></linearGradient></defs>`;
-            for (let i = 0; i < 4; i++) { const y = pad + i * ((h - pad * 2) / 3); html += `<line x1="${pad}" y1="${y}" x2="${w - 10}" y2="${y}" stroke="#1E293B" stroke-width="1"/><text x="${pad - 5}" y="${y + 4}" fill="#64748B" font-size="10" text-anchor="end">${Math.round(maxVal - i * maxVal / 3)}</text>`; }
-            ['00:00','06:00','12:00','18:00','24:00'].forEach((l, i) => {
-                const x = pad + i * ((w - pad - 10) / 4);
-                html += `<text x="${x}" y="${h - 5}" fill="#64748B" font-size="10" text-anchor="middle">${l}</text>`;
-            });
-            function toPoints(data) {
-                return data.map((v, i) => {
-                    const x = pad + i * ((w - pad - 10) / (data.length - 1));
-                    const y = pad + (1 - v / maxVal) * (h - pad * 2);
-                    return `${x},${y}`;
-                }).join(' ');
-            }
-            const subPts = toPoints(submitted);
-            const comPts = toPoints(completed);
-            const firstSub = `${pad},${h - pad}`;
-            const lastSub = `${pad + (submitted.length - 1) * ((w - pad - 10) / (submitted.length - 1))},${h - pad}`;
-            html += `<polygon points="${subPts} ${lastSub} ${firstSub}" fill="url(#cg1)"/>`;
-            html += `<polygon points="${comPts} ${lastSub} ${firstSub}" fill="url(#cg2)"/>`;
-            html += `<polyline id="chartLine1" points="${subPts}" fill="none" stroke="#3B82F6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-chart-line animated"/>`;
-            html += `<polyline id="chartLine2" points="${comPts}" fill="none" stroke="#7dd3fc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="svg-chart-line animated"/>`;
-            submitted.forEach((v, i) => {
-                const x = pad + i * ((w - pad - 10) / (submitted.length - 1));
-                const y1 = pad + (1 - v / maxVal) * (h - pad * 2);
-                html += `<circle cx="${x}" cy="${y1}" r="12" fill="transparent" class="chart-hover-dot" data-hour="${i}" data-sub="${v}" data-com="${completed[i] || 0}"/>`;
-            });
-            svg.innerHTML = html;
-            svg.querySelectorAll('.chart-hover-dot').forEach(dot => {
-                dot.addEventListener('mouseenter', function(e) {
-                    const tip = document.getElementById('chartTooltip');
-                    const hr = this.dataset.hour;
-                    tip.innerHTML = `<div class="font-semibold text-white">${String(hr).padStart(2,'0')}:00</div><div class="text-accent">Submitted: ${this.dataset.sub}</div><div class="text-sky-300">Completed: ${this.dataset.com}</div>`;
-                    tip.classList.remove('hidden');
-                    const rect = svg.getBoundingClientRect();
-                    const cx = parseFloat(this.getAttribute('cx'));
-                    const cy = parseFloat(this.getAttribute('cy'));
-                    tip.style.left = (cx / 800 * rect.width) + 'px';
-                    tip.style.top = (cy / 220 * rect.height) + 'px';
-                });
-                dot.addEventListener('mouseleave', () => document.getElementById('chartTooltip').classList.add('hidden'));
-            });
-        }
-        buildChart();
-
-        // Animate chart lines on scroll
-        const chartObs = new IntersectionObserver(entries => {
-            entries.forEach(en => {
-                if (en.isIntersecting) {
-                    document.querySelectorAll('.svg-chart-line').forEach(l => l.classList.add('animated'));
-                    chartObs.unobserve(en.target);
-                }
-            });
-        }, { threshold: 0.2 });
-        chartObs.observe(document.getElementById('chartContainer'));
-
-        // System Log
-        const sysLogEl = document.getElementById('systemLog');
-        const logTemplates = [
-            (a, id) => `${a} completed task #${id} in ${(1 + Math.random() * 5).toFixed(1)}s`,
-            (a, id) => `New task #${id} assigned to ${a}`,
-            (a, id) => `${a}: Generating report for task #${id}...`,
-            (a, id) => `${a}: Processing batch operation #${id}`,
-            (a, id) => `System health check passed - all agents operational`,
-            (a, id) => `${a}: Analyzing dataset for task #${id}...`,
-            (a, id) => `Task #${id} moved to review queue`,
-            (a, id) => `${a}: Optimization complete for task #${id}`,
-            (a, id) => `Queue manager: Redistributing workload across agents`,
-            (a, id) => `${a}: Code review completed for PR #${Math.floor(800 + Math.random() * 200)}`,
-        ];
-        let logTaskId = 4520;
-
-        function addLogEntry(msg) {
-            const now = new Date();
-            const ts = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
-            const line = document.createElement('div');
-            line.className = 'mb-1';
-            line.innerHTML = `<span class="text-muted/50">[${ts}]</span> ${msg}`;
-            sysLogEl.appendChild(line);
-            sysLogEl.scrollTop = sysLogEl.scrollHeight;
-            if (sysLogEl.children.length > 100) sysLogEl.removeChild(sysLogEl.firstChild);
-        }
-
-        // Seed initial log entries
-        for (let i = 0; i < 8; i++) {
-            const a = agents[Math.floor(Math.random() * agents.length)].name;
-            const tpl = logTemplates[Math.floor(Math.random() * logTemplates.length)];
-            addLogEntry(tpl(a, logTaskId++));
-        }
-
-        // Auto-generate log entries
-        setInterval(() => {
-            const a = agents[Math.floor(Math.random() * agents.length)].name;
-            const tpl = logTemplates[Math.floor(Math.random() * logTemplates.length)];
-            addLogEntry(tpl(a, logTaskId++));
-        }, 2500);
-
-        // ========== INITIALIZE API CONNECTION ==========
-        async function initApi() {
-            addLogEntry('Connecting to PRP-AI backend...');
-            const health = await apiFetch('/api/health');
-            if (health && health.status === 'healthy') {
-                setApiStatus(true);
-                addLogEntry(`<span class="text-green-400">Connected to PRP-AI API v${health.version}</span> (uptime: ${health.uptime_seconds}s)`);
-                await loadAgents();
-                await loadTasks();
-                await loadDashboard();
-                await loadMetrics();
-            } else {
-                setApiStatus(false);
-                addLogEntry('<span class="text-amber-400">Backend unavailable</span> - Dashboard running in simulation mode');
-            }
-        }
-
-        // Periodically refresh data from API
-        setInterval(async () => {
-            if (!apiConnected) {
-                const health = await apiFetch('/api/health');
-                if (health && health.status === 'healthy') {
-                    setApiStatus(true);
-                    addLogEntry('<span class="text-green-400">API reconnected</span>');
-                    await loadAgents();
-                    await loadTasks();
-                    await loadMetrics();
-                }
-                return;
-            }
-            await loadDashboard();
-        }, 30000);
-
-        initApi();
-
-    })();
-    </script>
-
+    <script src="main.js"></script>
 </body>
 </html>
