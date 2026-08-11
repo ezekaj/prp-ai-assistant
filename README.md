@@ -1,116 +1,72 @@
-# 🚀 Fully Autonomous Intelligent System
+# PRP AI Assistant
 
-**ZERO Manual Intervention Required** - Just tell it what you want, it does everything else.
+Tooling for **PRP (Product Requirement Prompt)** — a structured approach to
+AI-assisted development where each unit of work is specified before an agent
+writes any code, rather than prompted conversationally and corrected afterwards.
 
-## 🎯 What Is This?
-
-A revolutionary development assistant that operates with **complete autonomy**. No configuration, no manual steps, no complex setup. Just natural language commands and automatic execution.
-
-## ✨ Key Features
-
-### 🤖 100% Autonomous Operation
-- **Self-spawning agents** - Automatically creates specialized agents for any task
-- **Parallel execution** - Handles multiple operations simultaneously
-- **Zero configuration** - Works out of the box with no setup
-
-### 🔮 Predictive Intelligence
-- **Anticipates your needs** - Loads resources before you need them
-- **Pattern learning** - Adapts to your development style
-- **Smart suggestions** - Knows what you'll do next
-
-### 🛡️ Automatic Error Recovery
-- **Self-healing** - Fixes errors without intervention
-- **Smart retries** - Exponential backoff and fallback strategies
-- **Root cause analysis** - Identifies and fixes underlying issues
-
-### 👻 Invisible Operation
-- **Background monitoring** - Watches everything silently
-- **Auto-optimization** - Continuously improves performance
-- **Smart notifications** - Only interrupts when critical
-
-## 🚀 Quick Start
-
-```bash
-# ONE command - that's it!
-python main_demo.py
-```
-
-
-## 📊 Performance
-
-- **Response Time**: < 100ms for intent analysis
-- **Parallel Agents**: Up to 10 concurrent operations
-- **Success Rate**: 95%+ for common tasks
-- **Learning Speed**: Adapts within 5-10 interactions
-
-## 🛠️ Advanced Features
-
-### Self-Learning Capabilities
-- Records all interactions
-- Identifies success patterns
-- Optimizes future responses
-- Adapts to your style
-
-### Context Awareness
-- Understands project structure
-- Knows current development phase
-- Adapts to time of day
-- Respects your workflow
-
-### Predictive Execution
-- Monitors file changes
-- Predicts next actions
-- Preloads resources
-- Prepares environments
-
-## 🔒 Security & Safety
-
-- Never modifies without understanding
-- Automatic backup before changes
-- Rollback capabilities
-- Respects permissions
-
-## 🚦 System Status Indicators
-
-- 🟢 **Active** - System operating normally
-- 🟡 **Learning** - Adapting to new patterns
-- 🔵 **Processing** - Handling complex tasks
-- 🟣 **Optimizing** - Improving performance
-
-## 📈 Continuous Improvement
-
-The system improves automatically through:
-
-1. **Pattern Recognition** - Learns your workflow
-2. **Success Tracking** - Remembers what works
-3. **Performance Optimization** - Gets faster over time
-4. **Error Learning** - Avoids past mistakes
-
-## 🎯 Philosophy
-
-**"You think it, the system does it"**
-
-No more:
-- ❌ Reading documentation
-- ❌ Configuring tools
-- ❌ Manual debugging
-- ❌ Repetitive tasks
-
-Just:
-- ✅ Express your intent
-- ✅ Get results
-- ✅ Keep working
-
-## 🌟 The Future is Autonomous
-
-This system represents the future of development assistance:
-- **Zero friction** between thought and execution
-- **Complete automation** of routine tasks
-- **Intelligent adaptation** to your needs
-- **Invisible operation** that just works
+~25,000 lines of Python across generation, orchestration, monitoring and analytics.
 
 ---
 
-**Remember**: The goal is to make development feel like magic. You focus on what you want to build, the system handles everything else.
+## The idea
 
-🚀 **Welcome to truly autonomous development!**
+Conversational AI coding drifts. You ask for a feature, the agent makes assumptions,
+you correct them, it makes new ones, and after twenty exchanges nobody can say what
+was actually specified versus improvised.
+
+PRP fixes the specification first. Each PRP is a self-contained document describing
+context, requirements, constraints and validation criteria — written and reviewed
+*before* execution. The agent gets one well-formed brief instead of twenty partial
+ones, and the brief is a durable artifact you can diff, review and re-run.
+
+The methodology draws on [12-Factor App](https://12factor.net) thinking: explicit
+configuration, reproducible processes, and no hidden state between steps.
+
+## What's here
+
+| Component | What it does |
+|---|---|
+| `PRPs/scripts/prp-generator.py` | Builds PRP documents from a task description |
+| `PRPs/scripts/prp-master.py` | Central control — dispatches PRPs to agents |
+| `PRPs/scripts/prp_ai_agent_coordinator.py` | Multi-agent coordination and task routing |
+| `PRPs/scripts/prp-ai-code-generator.py` | Code generation against a PRP spec |
+| `PRPs/scripts/prp-ai-debugger.py` | Failure diagnosis within a PRP run |
+| `PRPs/scripts/prp-ai-learning-engine.py` | Records outcomes to refine later PRPs |
+| `PRPs/scripts/prp-analytics.py` · `prp-dashboard.py` | Run metrics and reporting |
+| `.prp/monitoring/continuous_monitor.py` | Background compliance scanning |
+| `.claude/commands/` | Slash commands wiring the above into Claude Code |
+
+CI workflows for linting, PR validation and deployment live in `.github/workflows/`.
+
+## Usage
+
+```bash
+pip install -r requirements.txt
+cp .env.example .env          # add your API keys
+
+python PRPs/scripts/prp-generator.py --task "add rate limiting to the API"
+python PRPs/scripts/prp-master.py --execute PRPs/generated/<name>.md
+```
+
+Inside Claude Code, the same flow is available as slash commands — see
+`.claude/commands/development/`.
+
+---
+
+## Status and honest scope
+
+This is **personal tooling**, built to make my own AI-assisted work reproducible.
+It is not a packaged product:
+
+- No published benchmarks. Earlier versions of this README quoted success-rate and
+  latency figures — those were design targets copied from planning documents, not
+  measurements, and have been removed.
+- Test coverage is partial (8 test modules against 76 source files).
+- The `docs/` and roadmap markdown contain aspirational planning material written
+  during development. Treat the code as the source of truth, not the roadmaps.
+
+It is published because the underlying idea — specify before you generate — has
+held up well in practice, and the orchestration code may be useful to others
+working on agent pipelines.
+
+MIT — Elvi Zekaj

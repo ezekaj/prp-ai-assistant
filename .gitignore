@@ -73,3 +73,4 @@ credentials.json
 *.temp
 temp/
 tmp/
+backup/
